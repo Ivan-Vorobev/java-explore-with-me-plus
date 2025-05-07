@@ -19,10 +19,8 @@ public class InputQueryRequest {
     @NotBlank
     String app;
 
-    @Pattern(
-            regexp = "^/[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$",
-            message = "Invalid endpoint format (e.g., '/events/1')"
-    )
+    @Pattern(regexp = "^/[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$",
+            message = "Invalid endpoint format (e.g., '/events/1')")
     String uri;
 
 
