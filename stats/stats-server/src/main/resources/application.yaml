@@ -1,0 +1,34 @@
+# Основная конфигурация (без профиля)
+server:
+  port: 9090
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: false
+  sql:
+    init:
+      mode: always
+
+---
+# Профиль "test"
+spring:
+  config:
+    activate:
+      on-profile: test
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:ewm-stats;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: ewm-stats
+    password: ewm-stats
+logging:
+  level:
+    org:
+      zalando:
+        logbook: TRACE
