@@ -23,7 +23,6 @@ public class InputQueryRequest {
             message = "Invalid endpoint format (e.g., '/events/1')")
     String uri;
 
-
     @Pattern(regexp = "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
             message = "Invalid IPv4 address")
     private String ip;
