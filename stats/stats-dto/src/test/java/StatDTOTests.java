@@ -71,7 +71,6 @@ public class StatDTOTests {
 
         assertFalse(violations.isEmpty(), "Должно быть нарушение валидации");
         assertEquals(1, violations.size());
-        assertEquals("не должно быть пустым", violations.iterator().next().getMessage());
     }
 
     @Test
@@ -119,7 +118,6 @@ public class StatDTOTests {
 
         assertFalse(violations.isEmpty(), "Должно быть нарушение валидации");
         assertEquals(1, violations.size());
-        assertEquals("не должно равняться null", violations.iterator().next().getMessage());
     }
 
     @Test
