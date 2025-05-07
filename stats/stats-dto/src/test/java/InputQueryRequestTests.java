@@ -1,4 +1,3 @@
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -32,7 +31,7 @@ class InputQueryRequestTests {
 
     @AfterAll
     static void tearDown() {
-        if (validator != null) {
+        if (validatorFactory != null) {
             validatorFactory.close();
         }
     }
