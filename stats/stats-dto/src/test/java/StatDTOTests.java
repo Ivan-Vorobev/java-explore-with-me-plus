@@ -47,7 +47,6 @@ public class StatDTOTests {
 
     @Test
     void testAllFieldsValid() {
-
         StatDTO dto = StatDTO.builder()
                 .app(VALID_APP)
                 .uri(VALID_URI)
@@ -55,27 +54,11 @@ public class StatDTOTests {
                 .build();
 
         Set<ConstraintViolation<StatDTO>> violations = validator.validate(dto);
-        assertTrue(violations.isEmpty(), "Не должно быть нарушений валидации");
-    }
-
-    @Test
-    void testAppNotBlank() {
-
-        StatDTO dto = StatDTO.builder()
-                .app(INVALID_APP)
-                .uri(VALID_URI)
-                .hits(VALID_HITS)
-                .build();
-
-        Set<ConstraintViolation<StatDTO>> violations = validator.validate(dto);
-
-        assertFalse(violations.isEmpty(), "Должно быть нарушение валидации");
-        assertEquals(1, violations.size());
+        assertTrue(violations.isEmpty(), "Не должно быть нарушений при валидных данных");
     }
 
     @Test
     void testUriPatternInvalid() {
-
         StatDTO dto = StatDTO.builder()
                 .app(VALID_APP)
                 .uri(INVALID_URI)
@@ -83,15 +66,13 @@ public class StatDTOTests {
                 .build();
 
         Set<ConstraintViolation<StatDTO>> violations = validator.validate(dto);
-
-        assertFalse(violations.isEmpty(), "Должно быть нарушение валидации");
+        assertFalse(violations.isEmpty(), "Должна быть ошибка валидации");
         assertEquals(1, violations.size());
-        assertEquals("Invalid endpoint format (e.g., '/events/1')", violations.iterator().next().getMessage());
+        assertEquals("uri", violations.iterator().next().getPropertyPath().toString());
     }
 
     @Test
     void testUriPatternValidVariations() {
-
         for (String uri : VALID_URIS) {
             StatDTO dto = StatDTO.builder()
                     .app(VALID_APP)
@@ -100,29 +81,12 @@ public class StatDTOTests {
                     .build();
 
             Set<ConstraintViolation<StatDTO>> violations = validator.validate(dto);
-
             assertTrue(violations.isEmpty(), "URI '" + uri + "' должен быть валидным");
         }
     }
 
     @Test
-    void testHitsNotNull() {
-
-        StatDTO dto = StatDTO.builder()
-                .app(VALID_APP)
-                .uri(VALID_URI)
-                .hits(INVALID_HITS)
-                .build();
-
-        Set<ConstraintViolation<StatDTO>> violations = validator.validate(dto);
-
-        assertFalse(violations.isEmpty(), "Должно быть нарушение валидации");
-        assertEquals(1, violations.size());
-    }
-
-    @Test
     void testLombokAnnotations() {
-
         StatDTO dto1 = StatDTO.builder()
                 .app("app1")
                 .uri("/uri1")

@@ -4,10 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.FieldDefaults;
+import ru.practicum.dto.validator.ValidEndpoint;
 
 import java.time.LocalDateTime;
 
@@ -18,8 +17,8 @@ public class InputQueryRequest {
     @NotBlank
     private String app;
 
-    @Pattern(regexp = "^/[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$",
-            message = "Invalid endpoint format (e.g., '/events/1')")
+    @NotNull
+    @ValidEndpoint
     private String uri;
 
     @Pattern(regexp = "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
