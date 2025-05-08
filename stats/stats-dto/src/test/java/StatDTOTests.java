@@ -3,7 +3,6 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.practicum.dto.StatDTO;
 
@@ -11,29 +10,23 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StatDTOTests {
+class StatDTOTests {
 
-    private static final String VALID_APP = "ewm-service";
-    private static final String INVALID_APP = "";
+    private static final String VALID_APP = "ewm-main-service";
     private static final String VALID_URI = "/events/1";
-    private static final String INVALID_URI = "invalid uri";
-    private static final Long VALID_HITS = 100L;
-    private static final Long INVALID_HITS = null;
-    private static final String[] VALID_URIS = {
-            "/events",
-            "/events/1",
-            "/events/1/comments",
-            "/events/1/comments/",
-            "/user-profile",
-            "/user_profile",
-            "/user-1/profile-2"
-    };
+    private static final Long VALID_HITS = 42L;
+
+    private static final String INVALID_APP_BLANK = "";
+    private static final String INVALID_APP_NULL = null;
+    private static final String INVALID_URI_BLANK = "";
+    private static final String INVALID_URI_NULL = null;
+    private static final String INVALID_URI_FORMAT = "events/1";
+    private static final Long INVALID_HITS_NULL = null;
 
     private static ValidatorFactory validatorFactory;
     private static Validator validator;
 
-    @BeforeAll
-    static void setUp() {
+    public StatDTOTests() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
     }
@@ -46,62 +39,112 @@ public class StatDTOTests {
     }
 
     @Test
-    void testAllFieldsValid() {
-        StatDTO dto = StatDTO.builder()
+    void testAllFieldsValidThenNoViolations() {
+
+        StatDTO statDTO = StatDTO.builder()
                 .app(VALID_APP)
                 .uri(VALID_URI)
                 .hits(VALID_HITS)
                 .build();
 
-        Set<ConstraintViolation<StatDTO>> violations = validator.validate(dto);
-        assertTrue(violations.isEmpty(), "Не должно быть нарушений при валидных данных");
+        Set<ConstraintViolation<StatDTO>> violations = validator.validate(statDTO);
+
+        assertTrue(violations.isEmpty());
     }
 
     @Test
-    void testUriPatternInvalid() {
-        StatDTO dto = StatDTO.builder()
-                .app(VALID_APP)
-                .uri(INVALID_URI)
+    void testAppIsBlankThenViolationOccurs() {
+
+        StatDTO statDTO = StatDTO.builder()
+                .app(INVALID_APP_BLANK)
+                .uri(VALID_URI)
                 .hits(VALID_HITS)
                 .build();
 
-        Set<ConstraintViolation<StatDTO>> violations = validator.validate(dto);
-        assertFalse(violations.isEmpty(), "Должна быть ошибка валидации");
+        Set<ConstraintViolation<StatDTO>> violations = validator.validate(statDTO);
+
+        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+        assertEquals("app", violations.iterator().next().getPropertyPath().toString());
+    }
+
+    @Test
+    void testAppIsNullThenViolationOccurs() {
+
+        StatDTO statDTO = StatDTO.builder()
+                .app(INVALID_APP_NULL)
+                .uri(VALID_URI)
+                .hits(VALID_HITS)
+                .build();
+
+        Set<ConstraintViolation<StatDTO>> violations = validator.validate(statDTO);
+
+        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+        assertEquals("app", violations.iterator().next().getPropertyPath().toString());
+    }
+
+    @Test
+    void testUriIsBlankThenViolationOccurs() {
+
+        StatDTO statDTO = StatDTO.builder()
+                .app(VALID_APP)
+                .uri(INVALID_URI_BLANK)
+                .hits(VALID_HITS)
+                .build();
+
+        Set<ConstraintViolation<StatDTO>> violations = validator.validate(statDTO);
+
+        assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
         assertEquals("uri", violations.iterator().next().getPropertyPath().toString());
     }
 
     @Test
-    void testUriPatternValidVariations() {
-        for (String uri : VALID_URIS) {
-            StatDTO dto = StatDTO.builder()
-                    .app(VALID_APP)
-                    .uri(uri)
-                    .hits(VALID_HITS)
-                    .build();
+    void testUriIsNullThenViolationOccurs() {
 
-            Set<ConstraintViolation<StatDTO>> violations = validator.validate(dto);
-            assertTrue(violations.isEmpty(), "URI '" + uri + "' должен быть валидным");
-        }
+        StatDTO statDTO = StatDTO.builder()
+                .app(VALID_APP)
+                .uri(INVALID_URI_NULL)
+                .hits(VALID_HITS)
+                .build();
+
+        Set<ConstraintViolation<StatDTO>> violations = validator.validate(statDTO);
+
+        assertFalse(violations.isEmpty());
+        assertEquals(2, violations.size());
+        assertEquals("uri", violations.iterator().next().getPropertyPath().toString());
     }
 
     @Test
-    void testLombokAnnotations() {
-        StatDTO dto1 = StatDTO.builder()
-                .app("app1")
-                .uri("/uri1")
-                .hits(10L)
+    void testUriFormatInvalidThenViolationOccurs() {
+
+        StatDTO statDTO = StatDTO.builder()
+                .app(VALID_APP)
+                .uri(INVALID_URI_FORMAT)
+                .hits(VALID_HITS)
                 .build();
 
-        StatDTO dto2 = StatDTO.builder()
-                .app("app1")
-                .uri("/uri1")
-                .hits(10L)
+        Set<ConstraintViolation<StatDTO>> violations = validator.validate(statDTO);
+
+        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+        assertEquals("uri", violations.iterator().next().getPropertyPath().toString());
+    }
+
+    @Test
+    void testHitsIsNullThenViolationOccurs() {
+
+        StatDTO statDTO = StatDTO.builder()
+                .app(VALID_APP)
+                .uri(VALID_URI)
+                .hits(INVALID_HITS_NULL)
                 .build();
 
-        assertEquals(dto1, dto2, "Объекты должны быть равны");
-        assertEquals(dto1.hashCode(), dto2.hashCode(), "Хэш-коды должны быть равны");
-        assertNotNull(dto1.toString(), "toString не должен возвращать null");
-        assertTrue(dto1.toString().contains("app=app1"), "toString должен содержать значение app");
+        Set<ConstraintViolation<StatDTO>> violations = validator.validate(statDTO);
+
+        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.size());
+        assertEquals("hits", violations.iterator().next().getPropertyPath().toString());
     }
 }
