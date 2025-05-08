@@ -17,22 +17,21 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "queries", schema = "public")
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Query {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(nullable = false)
-    String app;
+    private String app;
 
     @Column(nullable = false)
-    String uri;
+    private String uri;
 
     @Column(nullable = false, length = 45)
-    String ip;
+    private String ip;
 
     @Column(nullable = false)
-    LocalDateTime timestamp;
+    private LocalDateTime timestamp;
 }

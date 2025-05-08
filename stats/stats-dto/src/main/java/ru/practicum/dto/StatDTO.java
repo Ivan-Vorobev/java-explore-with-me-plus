@@ -7,21 +7,18 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.validator.ValidEndpoint;
 
 @Data
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class StatDTO {
 
     @NotBlank
-    String app;
+    private String app;
 
-    @Pattern(
-            regexp = "^/[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$",
-            message = "Invalid endpoint format (e.g., '/events/1')"
-    )
-    String uri;
+    @ValidEndpoint
+    private String uri;
 
     @NotNull
-    Long hits;
+    private Long hits;
 }
