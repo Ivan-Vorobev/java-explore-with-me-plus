@@ -52,9 +52,9 @@ class QueryServiceTests {
         LocalDateTime end = LocalDateTime.of(2024, 12, 31, 23, 59);
         List<String> uris = List.of("/events/1");
 
-        List<Object[]> repoResult = Arrays.asList(new Object[][]{
-                {"ewm-main-service", "/events/1", 3L}
-        });
+        List<Object[]> repoResult = List.<Object[]>of(
+                new Object[]{"ewm-main-service", "/events/1", 3L}
+        );
 
         when(queryRepository.findUniqueIpStatsForUris(start, end, uris)).thenReturn(repoResult);
 
