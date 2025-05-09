@@ -6,7 +6,6 @@ import ru.practicum.explorewithme.stats.repository.QueryRepository;
 import ru.practicum.explorewithme.stats.service.QueryService;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
