@@ -4,10 +4,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.dto.StatDTO;
-import ru.practicum.explorewithme.StatsServer;
-import ru.practicum.explorewithme.stats.controller.StatsController;
-import ru.practicum.explorewithme.stats.service.QueryService;
+import ru.practicum.dto.HitsStatDTO;
+import ru.practicum.ewm.StatsServer;
+import ru.practicum.ewm.stats.controller.StatsController;
+import ru.practicum.ewm.stats.service.StatsService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,19 +24,19 @@ class StatsControllerTests {
     private MockMvc mockMvc;
 
     @MockBean
-    private QueryService queryService;
+    private StatsService statsService;
 
     @Test
     void testValidRequestReturnsStats() throws Exception {
-        List<StatDTO> stats = List.of(
-                StatDTO.builder().app("ewm-main-service").uri("/events/1").hits(5L).build(),
-                StatDTO.builder().app("ewm-main-service").uri("/events/2").hits(10L).build()
+        List<HitsStatDTO> stats = List.of(
+                HitsStatDTO.builder().app("ewm-main-service").uri("/events/1").hits(5L).build(),
+                HitsStatDTO.builder().app("ewm-main-service").uri("/events/2").hits(10L).build()
         );
 
         LocalDateTime start = LocalDateTime.of(2024, 1, 1, 0, 0);
         LocalDateTime end = LocalDateTime.of(2024, 12, 31, 23, 59);
 
-        when(queryService.getStats(start, end, null, false)).thenReturn(stats);
+        when(statsService.getStats(start, end, null, false)).thenReturn(stats);
 
         mockMvc.perform(get("/stats")
                         .param("start", "2024-01-01 00:00:00")

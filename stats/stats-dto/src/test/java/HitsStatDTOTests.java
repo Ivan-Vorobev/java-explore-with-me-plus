@@ -4,13 +4,13 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-import ru.practicum.dto.StatDTO;
+import ru.practicum.dto.HitsStatDTO;
 
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class StatDTOTests {
+class HitsStatDTOTests {
 
     private static final String VALID_APP = "ewm-main-service";
     private static final String VALID_URI = "/events/1";
@@ -26,7 +26,7 @@ class StatDTOTests {
     private static ValidatorFactory validatorFactory;
     private static Validator validator;
 
-    public StatDTOTests() {
+    public HitsStatDTOTests() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
     }
@@ -41,13 +41,13 @@ class StatDTOTests {
     @Test
     void testAllFieldsValidThenNoViolations() {
 
-        StatDTO statDTO = StatDTO.builder()
+        HitsStatDTO hitsStatDTO = HitsStatDTO.builder()
                 .app(VALID_APP)
                 .uri(VALID_URI)
                 .hits(VALID_HITS)
                 .build();
 
-        Set<ConstraintViolation<StatDTO>> violations = validator.validate(statDTO);
+        Set<ConstraintViolation<HitsStatDTO>> violations = validator.validate(hitsStatDTO);
 
         assertTrue(violations.isEmpty());
     }
@@ -55,13 +55,13 @@ class StatDTOTests {
     @Test
     void testAppIsBlankThenViolationOccurs() {
 
-        StatDTO statDTO = StatDTO.builder()
+        HitsStatDTO hitsStatDTO = HitsStatDTO.builder()
                 .app(INVALID_APP_BLANK)
                 .uri(VALID_URI)
                 .hits(VALID_HITS)
                 .build();
 
-        Set<ConstraintViolation<StatDTO>> violations = validator.validate(statDTO);
+        Set<ConstraintViolation<HitsStatDTO>> violations = validator.validate(hitsStatDTO);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -71,13 +71,13 @@ class StatDTOTests {
     @Test
     void testAppIsNullThenViolationOccurs() {
 
-        StatDTO statDTO = StatDTO.builder()
+        HitsStatDTO hitsStatDTO = HitsStatDTO.builder()
                 .app(INVALID_APP_NULL)
                 .uri(VALID_URI)
                 .hits(VALID_HITS)
                 .build();
 
-        Set<ConstraintViolation<StatDTO>> violations = validator.validate(statDTO);
+        Set<ConstraintViolation<HitsStatDTO>> violations = validator.validate(hitsStatDTO);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -87,13 +87,13 @@ class StatDTOTests {
     @Test
     void testUriIsBlankThenViolationOccurs() {
 
-        StatDTO statDTO = StatDTO.builder()
+        HitsStatDTO hitsStatDTO = HitsStatDTO.builder()
                 .app(VALID_APP)
                 .uri(INVALID_URI_BLANK)
                 .hits(VALID_HITS)
                 .build();
 
-        Set<ConstraintViolation<StatDTO>> violations = validator.validate(statDTO);
+        Set<ConstraintViolation<HitsStatDTO>> violations = validator.validate(hitsStatDTO);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -103,13 +103,13 @@ class StatDTOTests {
     @Test
     void testUriIsNullThenViolationOccurs() {
 
-        StatDTO statDTO = StatDTO.builder()
+        HitsStatDTO hitsStatDTO = HitsStatDTO.builder()
                 .app(VALID_APP)
                 .uri(INVALID_URI_NULL)
                 .hits(VALID_HITS)
                 .build();
 
-        Set<ConstraintViolation<StatDTO>> violations = validator.validate(statDTO);
+        Set<ConstraintViolation<HitsStatDTO>> violations = validator.validate(hitsStatDTO);
 
         assertFalse(violations.isEmpty());
         assertEquals(2, violations.size());
@@ -119,13 +119,13 @@ class StatDTOTests {
     @Test
     void testUriFormatInvalidThenViolationOccurs() {
 
-        StatDTO statDTO = StatDTO.builder()
+        HitsStatDTO hitsStatDTO = HitsStatDTO.builder()
                 .app(VALID_APP)
                 .uri(INVALID_URI_FORMAT)
                 .hits(VALID_HITS)
                 .build();
 
-        Set<ConstraintViolation<StatDTO>> violations = validator.validate(statDTO);
+        Set<ConstraintViolation<HitsStatDTO>> violations = validator.validate(hitsStatDTO);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -135,13 +135,13 @@ class StatDTOTests {
     @Test
     void testHitsIsNullThenViolationOccurs() {
 
-        StatDTO statDTO = StatDTO.builder()
+        HitsStatDTO hitsStatDTO = HitsStatDTO.builder()
                 .app(VALID_APP)
                 .uri(VALID_URI)
                 .hits(INVALID_HITS_NULL)
                 .build();
 
-        Set<ConstraintViolation<StatDTO>> violations = validator.validate(statDTO);
+        Set<ConstraintViolation<HitsStatDTO>> violations = validator.validate(hitsStatDTO);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
