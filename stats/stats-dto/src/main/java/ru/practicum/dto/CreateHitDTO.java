@@ -1,18 +1,25 @@
 package ru.practicum.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.practicum.dto.validator.ValidEndpoint;
 
 import java.time.LocalDateTime;
 
-@Data
+@Setter
+@Getter
 @Builder
-public class InputQueryRequest {
+@AllArgsConstructor
+@NoArgsConstructor
+public class CreateHitDTO {
 
     @NotBlank
     private String app;
@@ -25,7 +32,7 @@ public class InputQueryRequest {
             message = "Invalid IPv4 address")
     private String ip;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @NotNull(message = "Date and time are required")
     private LocalDateTime timestamp;
 }
