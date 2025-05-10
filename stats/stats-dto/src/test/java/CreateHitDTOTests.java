@@ -32,7 +32,7 @@ class CreateHitDTOTests {
     private static ValidatorFactory validatorFactory;
     private static Validator validator;
 
-    public void createHitDTOTests() {
+    public CreateHitDTOTests() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
     }
