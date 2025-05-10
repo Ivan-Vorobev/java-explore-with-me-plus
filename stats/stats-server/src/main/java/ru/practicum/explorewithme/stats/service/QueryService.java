@@ -35,11 +35,15 @@ public class QueryService {
         }
 
         return results.stream()
-                .map(row -> StatDTO.builder()
-                        .app((String) row[0])
-                        .uri((String) row[1])
-                        .hits(((Number) row[2]).longValue())
-                        .build())
+                .map(this::mapToStatDto)
                 .collect(Collectors.toList());
+    }
+
+    private StatDTO mapToStatDto(Object[] row) {
+        return StatDTO.builder()
+                .app((String) row[0])
+                .uri((String) row[1])
+                .hits(((Number) row[2]).longValue())
+                .build();
     }
 }
