@@ -4,14 +4,14 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-import ru.practicum.dto.InputQueryRequest;
+import ru.practicum.dto.CreateHitDTO;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class InputQueryRequestTests {
+class CreateHitDTOTests {
 
     private static final String VALID_APP = "ewm-main-service";
     private static final String VALID_URI = "/events/1";
@@ -32,7 +32,7 @@ class InputQueryRequestTests {
     private static ValidatorFactory validatorFactory;
     private static Validator validator;
 
-    public InputQueryRequestTests() {
+    public void createHitDTOTests() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
     }
@@ -48,22 +48,22 @@ class InputQueryRequestTests {
     @Test
     void testAllFieldsValidThenNoViolations() {
 
-        InputQueryRequest request = InputQueryRequest.builder()
+        CreateHitDTO request = CreateHitDTO.builder()
                 .app(VALID_APP)
                 .uri(VALID_URI)
                 .ip(VALID_IP)
                 .timestamp(VALID_TIMESTAMP)
                 .build();
 
-        InputQueryRequest request2 = InputQueryRequest.builder()
+        CreateHitDTO request2 = CreateHitDTO.builder()
                 .app(VALID_APP)
                 .uri(VALID_URI_WITH_QUERY_PARAMS)
                 .ip(VALID_IP)
                 .timestamp(VALID_TIMESTAMP)
                 .build();
 
-        Set<ConstraintViolation<InputQueryRequest>> violations = validator.validate(request);
-        Set<ConstraintViolation<InputQueryRequest>> violations2 = validator.validate(request2);
+        Set<ConstraintViolation<CreateHitDTO>> violations = validator.validate(request);
+        Set<ConstraintViolation<CreateHitDTO>> violations2 = validator.validate(request2);
 
         assertTrue(violations.isEmpty());
         assertTrue(violations2.isEmpty());
@@ -72,14 +72,14 @@ class InputQueryRequestTests {
     @Test
     void testAppIsBlankThenViolationOccurs() {
 
-        InputQueryRequest request = InputQueryRequest.builder()
+        CreateHitDTO request = CreateHitDTO.builder()
                 .app(INVALID_APP_BLANK)
                 .uri(VALID_URI)
                 .ip(VALID_IP)
                 .timestamp(VALID_TIMESTAMP)
                 .build();
 
-        Set<ConstraintViolation<InputQueryRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<CreateHitDTO>> violations = validator.validate(request);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -89,14 +89,14 @@ class InputQueryRequestTests {
     @Test
     void testAppIsNullThenViolationOccurs() {
 
-        InputQueryRequest request = InputQueryRequest.builder()
+        CreateHitDTO request = CreateHitDTO.builder()
                 .app(INVALID_APP_NULL)
                 .uri(VALID_URI)
                 .ip(VALID_IP)
                 .timestamp(VALID_TIMESTAMP)
                 .build();
 
-        Set<ConstraintViolation<InputQueryRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<CreateHitDTO>> violations = validator.validate(request);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -106,14 +106,14 @@ class InputQueryRequestTests {
     @Test
     void testUriIsBlankThenViolationOccurs() {
 
-        InputQueryRequest request = InputQueryRequest.builder()
+        CreateHitDTO request = CreateHitDTO.builder()
                 .app(VALID_APP)
                 .uri(INVALID_URI_BLANK)
                 .ip(VALID_IP)
                 .timestamp(VALID_TIMESTAMP)
                 .build();
 
-        Set<ConstraintViolation<InputQueryRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<CreateHitDTO>> violations = validator.validate(request);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -123,14 +123,14 @@ class InputQueryRequestTests {
     @Test
     void testInvalidUriWithEmptyQueryParamsThenViolationOccurs() {
 
-        InputQueryRequest request = InputQueryRequest.builder()
+        CreateHitDTO request = CreateHitDTO.builder()
                 .app(VALID_APP)
                 .uri(INVALID_URI_WITH_EMPTY_QUERY_PARAMS)
                 .ip(VALID_IP)
                 .timestamp(VALID_TIMESTAMP)
                 .build();
 
-        Set<ConstraintViolation<InputQueryRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<CreateHitDTO>> violations = validator.validate(request);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -140,14 +140,14 @@ class InputQueryRequestTests {
     @Test
     void testInvalidUriWithEmptyParamsThenViolationOccurs() {
 
-        InputQueryRequest request = InputQueryRequest.builder()
+        CreateHitDTO request = CreateHitDTO.builder()
                 .app(VALID_APP)
                 .uri(INVALID_URI_WITH_EMPTY_PARAMS)
                 .ip(VALID_IP)
                 .timestamp(VALID_TIMESTAMP)
                 .build();
 
-        Set<ConstraintViolation<InputQueryRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<CreateHitDTO>> violations = validator.validate(request);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -157,14 +157,14 @@ class InputQueryRequestTests {
     @Test
     void testUriIsNullThenViolationOccurs() {
 
-        InputQueryRequest request = InputQueryRequest.builder()
+        CreateHitDTO request = CreateHitDTO.builder()
                 .app(VALID_APP)
                 .uri(INVALID_URI_NULL)
                 .ip(VALID_IP)
                 .timestamp(VALID_TIMESTAMP)
                 .build();
 
-        Set<ConstraintViolation<InputQueryRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<CreateHitDTO>> violations = validator.validate(request);
 
         assertFalse(violations.isEmpty());
         assertEquals(2, violations.size());
@@ -174,14 +174,14 @@ class InputQueryRequestTests {
     @Test
     void testUriFormatInvalidThenViolationOccurs() {
 
-        InputQueryRequest request = InputQueryRequest.builder()
+        CreateHitDTO request = CreateHitDTO.builder()
                 .app(VALID_APP)
                 .uri(INVALID_URI_FORMAT)
                 .ip(VALID_IP)
                 .timestamp(VALID_TIMESTAMP)
                 .build();
 
-        Set<ConstraintViolation<InputQueryRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<CreateHitDTO>> violations = validator.validate(request);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -191,14 +191,14 @@ class InputQueryRequestTests {
     @Test
     void testIpFormatInvalidThenViolationOccurs() {
 
-        InputQueryRequest request = InputQueryRequest.builder()
+        CreateHitDTO request = CreateHitDTO.builder()
                 .app(VALID_APP)
                 .uri(VALID_URI)
                 .ip(INVALID_IP)
                 .timestamp(VALID_TIMESTAMP)
                 .build();
 
-        Set<ConstraintViolation<InputQueryRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<CreateHitDTO>> violations = validator.validate(request);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -208,14 +208,14 @@ class InputQueryRequestTests {
     @Test
     void testTimestampIsNullThenViolationOccurs() {
 
-        InputQueryRequest request = InputQueryRequest.builder()
+        CreateHitDTO request = CreateHitDTO.builder()
                 .app(VALID_APP)
                 .uri(VALID_URI)
                 .ip(VALID_IP)
                 .timestamp(INVALID_TIMESTAMP_NULL)
                 .build();
 
-        Set<ConstraintViolation<InputQueryRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<CreateHitDTO>> violations = validator.validate(request);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());

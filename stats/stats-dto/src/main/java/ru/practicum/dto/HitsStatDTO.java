@@ -2,13 +2,19 @@ package ru.practicum.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.practicum.dto.validator.ValidEndpoint;
 
-@Data
+@Setter
+@Getter
 @Builder
-public class StatDTO {
+@AllArgsConstructor
+@NoArgsConstructor
+public class HitsStatDTO {
 
     @NotBlank
     private String app;

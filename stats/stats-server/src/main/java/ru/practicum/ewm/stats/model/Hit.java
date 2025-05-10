@@ -1,4 +1,4 @@
-package ru.practicum.explorewithme.stats.model;
+package ru.practicum.ewm.stats.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "queries", schema = "public")
-public class Query {
+@Table(name = "HITS")
+public class Hit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

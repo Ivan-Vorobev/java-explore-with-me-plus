@@ -1,13 +1,14 @@
-package ru.practicum.explorewithme.stats.controller;
+package ru.practicum.ewm.stats.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.dto.StatDTO;
-import ru.practicum.explorewithme.stats.service.QueryService;
+import ru.practicum.dto.HitsStatDTO;
+import ru.practicum.ewm.stats.service.StatsService;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -16,14 +17,14 @@ import java.util.List;
 @Validated
 public class StatsController {
 
-    private final QueryService queryService;
+    private final StatsService statsService;
 
     @GetMapping
-    public List<StatDTO> getStats(
+    public Collection<HitsStatDTO> getStats(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
             @RequestParam(required = false) List<String> uris,
             @RequestParam(defaultValue = "false") boolean unique) {
-        return queryService.getStats(start, end, uris, unique);
+        return statsService.getStats(start, end, uris, unique);
     }
 }
