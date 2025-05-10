@@ -8,7 +8,7 @@ import ru.practicum.ewm.stats.repository.HitsRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Service("statService")
+@Service
 @RequiredArgsConstructor
 public class StatsService {
 
