@@ -24,9 +24,9 @@ spring:
         format_sql: true
   datasource:
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:ewm-stats;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
-    username: ewm-stats
-    password: ewm-stats
+    url: jdbc:h2:mem:explorewithme;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: ewm-main
+    password: ewm-main
 logging:
   level:
     org:

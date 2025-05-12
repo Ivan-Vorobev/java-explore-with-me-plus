@@ -1,6 +1,6 @@
 services:
   stats-server:
-    build: stats/stats-server
+    build: stats
     image: stats-server
     container_name: stats-server
     ports:
@@ -8,10 +8,10 @@ services:
     depends_on:
       - stats-db
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://stats-db-postgres:5432/explore_with_me"
-      SPRING_DATASOURCE_USERNAME: "explore-with-me"
-      SPRING_DATASOURCE_PASSWORD: "explore-with-me"
-
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://stats-db-postgres:5432/ewm"
+      SPRING_DATASOURCE_USERNAME: "ewm-stats"
+      SPRING_DATASOURCE_PASSWORD: "ewm-stats"
+      POSTGRES_INITDB_ARGS: "--auth=scram-sha-256 --username=ewm-stats"
   stats-db:
     image: postgres:16.1
     container_name: stats-db-postgres
@@ -40,9 +40,9 @@ services:
       - stats-server
     environment:
       STATS-CLIENT_SERVER-URL: "http://stats-server:9090"
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://ewm-db-postgres:5432/ewm"
-      SPRING_DATASOURCE_USERNAME: "ewm-stats"
-      SPRING_DATASOURCE_PASSWORD: "ewm-stats"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://ewm-db-postgres:5432/explorewithme"
+      SPRING_DATASOURCE_USERNAME: "ewm-main"
+      SPRING_DATASOURCE_PASSWORD: "ewm-main"
 
   ewm-db:
     image: postgres:16.1
