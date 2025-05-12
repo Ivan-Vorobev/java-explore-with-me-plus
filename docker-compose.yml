@@ -40,7 +40,7 @@ services:
       - stats-server
     environment:
       STATS-CLIENT_SERVER-URL: "http://stats-server:9090"
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://ewm-db-postgres:5432/explore_with_me"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://ewm-db-postgres:5432/ewm"
       SPRING_DATASOURCE_USERNAME: "ewm-stats"
       SPRING_DATASOURCE_PASSWORD: "ewm-stats"
 

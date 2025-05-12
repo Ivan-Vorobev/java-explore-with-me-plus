@@ -18,7 +18,7 @@ spring:
         format_sql: true
         connection:
           read_only: false
-    spring.sql.init.mode: always
+  sql.init.mode: always
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/ewm
