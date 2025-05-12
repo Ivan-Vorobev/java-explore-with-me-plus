@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(StatsController.class)
 @ContextConfiguration(classes = StatsServer.class)
-class StatsControllerTests {
+class StatsControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
