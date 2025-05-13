@@ -16,13 +16,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiError handleException(final Exception e, HttpStatus status) {
+    public ApiError handleException(final Exception e) {
         log.error("500 {}", e.getMessage(), e);
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
         String stackTrace = sw.toString();
-        return new ApiError(status,"Error ...", e.getMessage(), stackTrace);
+        return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR,"Error ...", e.getMessage(), stackTrace);
     }
 
 }
