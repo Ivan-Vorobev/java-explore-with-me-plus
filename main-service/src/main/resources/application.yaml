@@ -1,6 +1,7 @@
 # Основная конфигурация (без профиля)
 server:
   port: 8080
+
 spring:
   jpa:
     hibernate:
