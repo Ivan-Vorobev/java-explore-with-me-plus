@@ -4,6 +4,9 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,11 +31,12 @@ public class PublicCategoriesController {
 
     @GetMapping
     ResponseEntity<Collection<CategoryDto>> getCategories(
-            @RequestParam(defaultValue = DEFAULT_FROM_VALUE) @PositiveOrZero Long from,
+            @RequestParam(defaultValue = DEFAULT_FROM_VALUE) @PositiveOrZero Integer from,
             @RequestParam(defaultValue = DEFAULT_SIZE_VALUE) @Positive Integer size) {
+        Pageable pageable = PageRequest.of(from/size, size, Sort.by("id").ascending());
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(categoryService.getCategories(from, size));
+                .body(categoryService.getCategories(pageable));
     }
 
     @GetMapping("/{categoryId}")
