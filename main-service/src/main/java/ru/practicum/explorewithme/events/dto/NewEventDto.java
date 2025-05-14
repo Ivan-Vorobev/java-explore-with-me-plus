@@ -1,0 +1,33 @@
+package ru.practicum.explorewithme.events.dto;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+public class NewEventDto {
+    @NotBlank
+    private String title;
+    @NotBlank
+    private String annotation;
+    @NotBlank
+    private String description;
+    @NotNull
+    private Long category;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @NotNull
+    private LocalDateTime eventDate; // Формат: yyyy-MM-dd HH:mm:ss
+    @NotNull
+    private LocationDto location;
+    @NotNull
+    private Integer participantLimit;
+    @NotNull
+    private Boolean paid;
+    @NotNull
+    private Boolean requestModeration;
+}
