@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.explorewithme.categories.dto.CategoryDto;
 import ru.practicum.explorewithme.categories.dto.NewCategoryDto;
@@ -15,6 +13,7 @@ import ru.practicum.explorewithme.categories.model.Category;
 import ru.practicum.explorewithme.categories.repository.CategoryRepository;
 import ru.practicum.explorewithme.exception.DataAlreadyExistException;
 import ru.practicum.explorewithme.exception.NotFoundException;
+import ru.practicum.explorewithme.exception.RelatedDataDeleteException;
 
 import java.util.Collection;
 
@@ -41,24 +40,29 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto updateCategory(Long categoryId, NewCategoryDto newCategoryDto) {
+    public CategoryDto updateCategory(Long categoryId, CategoryDto categoryDto) {
         Category currentCategory = getCategoryById(categoryId);
-        currentCategory.setName(newCategoryDto.getName());
+        currentCategory.setName(categoryDto.getName());
         try {
             Category updatedCategory = categoryRepository.save(currentCategory);
             return categoryMapper.toDto(updatedCategory);
         } catch (DataIntegrityViolationException e) {
             final String error = String.format("The category with name=%s already exists in the database.",
-                    newCategoryDto.getName());
+                    categoryDto.getName());
             log.warn(error);
             throw new DataAlreadyExistException(error);
         }
-
     }
 
     @Override
     public void deleteCategory(Long categoryId) {
-        categoryRepository.deleteById(categoryId);
+        try {
+            categoryRepository.deleteById(categoryId);
+        } catch (DataIntegrityViolationException e) {
+            final String error = String.format("Attempt to delete a category id=%d related to event.", categoryId);
+            log.warn(error);
+            throw new RelatedDataDeleteException(error);
+        }
     }
 
     @Override
@@ -68,9 +72,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Collection<CategoryDto> getCategories(Long from, Integer size) {
-        Pageable pageable = PageRequest.of(0, size, Sort.by("id").ascending());
-        return categoryRepository.findByIdGreaterThanEqual(from, pageable).stream()
+    public Collection<CategoryDto> getCategories(Pageable pageable) {
+        return categoryRepository.findAll(pageable).stream()
                 .map(categoryMapper::toDto)
                 .toList();
     }
