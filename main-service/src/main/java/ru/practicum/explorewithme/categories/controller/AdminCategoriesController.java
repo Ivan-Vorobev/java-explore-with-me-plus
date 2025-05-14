@@ -38,9 +38,9 @@ public class AdminCategoriesController {
 
     @PatchMapping("/{categoryId}")
     ResponseEntity<CategoryDto> update(@PathVariable Long categoryId,
-                                       @RequestBody @Valid NewCategoryDto newCategoryDto) {
+                                       @RequestBody @Valid CategoryDto categoryDto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(categoryService.updateCategory(categoryId, newCategoryDto));
+                .body(categoryService.updateCategory(categoryId, categoryDto));
     }
 }

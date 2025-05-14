@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.explorewithme.exception.DataAlreadyExistException;
 import ru.practicum.explorewithme.exception.NotFoundException;
+import ru.practicum.explorewithme.exception.RelatedDataDeleteException;
 import ru.practicum.explorewithme.exception.model.ApiError;
 
 import java.io.PrintWriter;
@@ -59,5 +60,16 @@ public class GlobalExceptionHandler {
         e.printStackTrace(pw);
         String stackTrace = sw.toString();
         return new ApiError(HttpStatus.CONFLICT,"The data must be unique.", e.getMessage(), stackTrace);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleRelatedDataDeleteException(final RelatedDataDeleteException e) {
+        log.info("{} {}", HttpStatus.CONFLICT, e.getMessage());
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        String stackTrace = sw.toString();
+        return new ApiError(HttpStatus.CONFLICT,"Deleting related data is not allowed.", e.getMessage(), stackTrace);
     }
 }
