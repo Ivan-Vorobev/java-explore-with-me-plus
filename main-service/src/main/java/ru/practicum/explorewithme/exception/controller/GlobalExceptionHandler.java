@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiError handleNotFound(final NotFoundException e) {
-        log.info("{} {}", HttpStatus.NOT_FOUND, e.getMessage());
+        log.error("{} {}", HttpStatus.NOT_FOUND, e.getMessage());
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleValidationException(final MethodArgumentNotValidException e) {
-        log.info("{} {}", HttpStatus.BAD_REQUEST, e.getMessage());
+        log.error("{} {}", HttpStatus.BAD_REQUEST, e.getMessage());
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
@@ -54,7 +54,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleDataAlreadyExistException(final DataAlreadyExistException e) {
-        log.info("{} {}", HttpStatus.CONFLICT, e.getMessage());
+        log.error("{} {}", HttpStatus.CONFLICT, e.getMessage());
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
@@ -65,7 +65,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleRelatedDataDeleteException(final RelatedDataDeleteException e) {
-        log.info("{} {}", HttpStatus.CONFLICT, e.getMessage());
+        log.error("{} {}", HttpStatus.CONFLICT, e.getMessage());
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
