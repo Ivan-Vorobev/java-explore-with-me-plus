@@ -7,6 +7,7 @@ import ru.practicum.explorewithme.categories.dto.CategoryDto;
 import ru.practicum.explorewithme.categories.service.CategoryService;
 import ru.practicum.explorewithme.events.dto.EventDto;
 import ru.practicum.explorewithme.events.dto.NewEventDto;
+import ru.practicum.explorewithme.events.enumiration.EventState;
 import ru.practicum.explorewithme.events.mapper.EventMapper;
 import ru.practicum.explorewithme.events.model.Event;
 import ru.practicum.explorewithme.events.repository.EventRepository;
@@ -53,6 +54,19 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public EventDto updateEvent(Long eventId, NewEventDto newEventDto, Long userId) {
+        Event event = findEventById(eventId);
+        checkInitiatorId(event, userId);
+
+        if (List.of(EventState.CANCELED, EventState.PENDING).contains(event.getState())) {
+            throw new ConflictException("Only pending or canceled events can be changed");
+        }
+
+
+        return null;
+    }
+
+    @Override
     public List<EventDto> findAllByParams(Long userId, Integer from, Integer size) {
         UserDto userDto = userService.getById(userId);
         int page = from / size + 1;
@@ -63,15 +77,22 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventDto findUserEvent(Long userId, Long eventId) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("Event with id " + eventId + "not found"));
-
-        if (!event.getInitiator().getId().equals(userId)) {
-            throw new ConflictException("Event with id " + eventId + "don't compare with initiator " + userId);
-        }
+        Event event = findEventById(eventId);
+        checkInitiatorId(event, userId);
 
         return eventMapper.toDto(event);
     }
 
+    @Override
+    public Event findEventById(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
+    }
+
+    private void checkInitiatorId(Event event, Long userId) {
+        if (!event.getInitiator().getId().equals(userId)) {
+            throw new ConflictException("Event with id " + event.getId() + "don't compare with initiator " + userId);
+        }
+    }
 
 }

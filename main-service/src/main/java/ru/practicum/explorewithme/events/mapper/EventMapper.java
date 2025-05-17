@@ -13,6 +13,7 @@ public interface EventMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(source = "location.lat", target = "locationLat")
     @Mapping(source = "location.lon", target = "locationLon")
+    @Mapping(source = "category", target = "category.id")
     Event toModel(NewEventDto newEventDto);
 
     @Mapping(target = "id", ignore = true)
@@ -20,6 +21,7 @@ public interface EventMapper {
     @Mapping(source = "location.lon", target = "locationLon")
     Event toModel(EventDto eventDto);
 
+    @Mapping(source = "category", target = "category.id")
     EventDto convertShortDto(NewEventDto eventDto);
 
     @Mapping(source = "locationLat", target = "location.lat")
