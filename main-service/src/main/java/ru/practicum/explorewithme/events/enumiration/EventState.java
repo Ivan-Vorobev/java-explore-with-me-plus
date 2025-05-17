@@ -3,5 +3,6 @@ package ru.practicum.explorewithme.events.enumiration;
 public enum EventState {
     PENDING,
     PUBLISHED,
-    CANCELED
+    CANCELED,
+    CANCEL_REVIEW
 }
