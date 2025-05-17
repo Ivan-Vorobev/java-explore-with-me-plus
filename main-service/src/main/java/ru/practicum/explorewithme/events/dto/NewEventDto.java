@@ -1,10 +1,14 @@
 package ru.practicum.explorewithme.events.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
+import ru.practicum.explorewithme.config.CustomLocalDateTimeDeserializer;
+import ru.practicum.explorewithme.config.CustomLocalDateTimeSerializer;
+import ru.practicum.explorewithme.constraint.EventStartDateTime;
 
 import java.time.LocalDateTime;
 
@@ -19,8 +23,10 @@ public class NewEventDto {
     private String description;
     @NotNull
     private Long category;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @NotNull
+    @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class) // Для входящих данных
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)     // Для исходящих данных
+    @EventStartDateTime
     private LocalDateTime eventDate; // Формат: yyyy-MM-dd HH:mm:ss
     @NotNull
     private LocationDto location;

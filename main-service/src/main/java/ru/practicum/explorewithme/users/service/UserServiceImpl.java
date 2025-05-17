@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.explorewithme.exception.DataAlreadyExistException;
+import ru.practicum.explorewithme.exception.NotFoundException;
 import ru.practicum.explorewithme.users.dto.NewUserRequest;
 import ru.practicum.explorewithme.users.dto.UserDto;
 import ru.practicum.explorewithme.users.mapper.UserMapper;
@@ -27,6 +28,14 @@ public class UserServiceImpl implements UserService {
         }
         User user = userMapper.toUser(request);
         return userMapper.toUserDto(userRepository.save(user));
+    }
+
+    @Override
+    public UserDto getById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id " + userId + " not found"));
+
+        return userMapper.toUserDto(user);
     }
 
     @Override
