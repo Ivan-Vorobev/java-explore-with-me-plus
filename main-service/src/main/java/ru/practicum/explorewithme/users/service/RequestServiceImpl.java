@@ -2,8 +2,9 @@ package ru.practicum.explorewithme.users.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.explorewithme.events.repository.EventRepository;
 import ru.practicum.explorewithme.users.dto.ParticipationRequestDto;
-import ru.practicum.explorewithme.users.mapper.RequestMapper;
+import ru.practicum.explorewithme.users.mapper.ParticipationRequestMapper;
 import ru.practicum.explorewithme.users.repository.RequestRepository;
 
 import java.util.List;
@@ -13,11 +14,11 @@ import java.util.List;
 public class RequestServiceImpl implements RequestService {
 
     private final RequestRepository requestRepository;
-    private final RequestMapper requestMapper;
+    private final EventRepository eventRepository;
 
     @Override
     public List<ParticipationRequestDto> findAllRequestsByUserId(long userId) {
-        return requestMapper.mapToDto(requestRepository.findParticipationRequestByRequester_Id(userId));
+        return ParticipationRequestMapper.mapToDTO(requestRepository.findParticipationRequestByRequester_Id(userId));
     }
 
     @Override
