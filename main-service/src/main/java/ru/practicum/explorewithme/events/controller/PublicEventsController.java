@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.client.hit.HitClient;
 import ru.practicum.explorewithme.events.dto.EventDto;
 import ru.practicum.explorewithme.events.service.EventService;
 
@@ -19,7 +18,6 @@ import java.util.List;
 @Slf4j
 public class PublicEventsController {
     private final EventService eventService;
-    private final HitClient hitClient;
 
     @GetMapping
     public List<EventDto> getEvents(
@@ -51,10 +49,10 @@ public class PublicEventsController {
         return eventService.findAllByUserParams(userEventParams);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{eventId}")
     public EventDto getPublishedEvent(
             HttpServletRequest request,
-            @NotNull @RequestParam Long eventId
+            @NotNull @PathVariable Long eventId
     ) {
         eventService.sendHit(request);
         return eventService.findPublishedEvent(eventId);

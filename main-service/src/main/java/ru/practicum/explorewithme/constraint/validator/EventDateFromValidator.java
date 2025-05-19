@@ -15,6 +15,10 @@ public class EventDateFromValidator implements ConstraintValidator<EventStartDat
             LocalDateTime fieldValue,
             ConstraintValidatorContext constraintContext) {
 
+        if (fieldValue == null) {
+            return true;
+        }
+
         return fieldValue.isAfter(LocalDateTime.now().plusHours(2L));
     }
 }

@@ -5,10 +5,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.events.dto.EventDto;
 import ru.practicum.explorewithme.events.dto.NewEventDto;
 import ru.practicum.explorewithme.events.service.EventService;
+import ru.practicum.explorewithme.events.dto.RequestMethod;
 
 import java.util.List;
 
@@ -33,7 +35,7 @@ public class PublicUserEventsController {
     @ResponseStatus(HttpStatus.CREATED)
     public EventDto createEvent(
             @Valid @NotNull @PathVariable Long userId,
-            @Valid @RequestBody NewEventDto eventDto
+            @Validated({RequestMethod.Create.class}) @RequestBody NewEventDto eventDto
     ) {
         return eventService.addEvent(eventDto, userId);
     }
@@ -50,8 +52,8 @@ public class PublicUserEventsController {
     @PatchMapping("/events/{eventId}")
     public EventDto updateUserEvent(
             @Valid @NotNull @PathVariable Long userId,
-            @Valid @RequestBody NewEventDto eventDto,
-            @Valid @NotNull @PathVariable Long eventId
+            @Valid @NotNull @PathVariable Long eventId,
+            @Validated({RequestMethod.Update.class}) @RequestBody NewEventDto eventDto
     ) {
 
         return eventService.updateEventByUser(eventId, eventDto, userId);

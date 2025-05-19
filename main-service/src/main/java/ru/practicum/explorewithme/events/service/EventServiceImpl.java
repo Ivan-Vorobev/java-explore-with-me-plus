@@ -73,7 +73,7 @@ public class EventServiceImpl implements EventService {
         Event event = findEventById(eventId);
         checkInitiatorId(event, userId);
 
-        if (List.of(EventState.CANCELED, EventState.PENDING).contains(event.getState())) {
+        if (!List.of(EventState.CANCELED, EventState.PENDING).contains(event.getState())) {
             throw new ConflictException("Only pending or canceled events can be changed");
         }
 
@@ -85,7 +85,7 @@ public class EventServiceImpl implements EventService {
         Event event = findEventById(eventId);
 
         if (!Objects.isNull(newEventDto.getStateAction())) {
-            if (List.of(EventStateAction.PUBLISH_EVENT, EventStateAction.REJECT_EVENT).contains(newEventDto.getStateAction())) {
+            if (!List.of(EventStateAction.PUBLISH_EVENT, EventStateAction.REJECT_EVENT).contains(newEventDto.getStateAction())) {
                 throw new ConflictException("Invalid action: " + newEventDto.getStateAction());
             }
 
@@ -100,8 +100,8 @@ public class EventServiceImpl implements EventService {
             if (newEventDto.getStateAction().equals(EventStateAction.PUBLISH_EVENT)) {
                 LocalDateTime checkPublishDate = LocalDateTime.now().plusHours(1L);
                 if (
-                        (!Objects.isNull(newEventDto.getEventDate()) && checkPublishDate.isBefore(newEventDto.getEventDate()))
-                                || checkPublishDate.isBefore(event.getEventDate())
+                        (!Objects.isNull(newEventDto.getEventDate()) && checkPublishDate.isAfter(newEventDto.getEventDate()))
+                                || checkPublishDate.isAfter(event.getEventDate())
                 ) {
                     throw new ConflictException("The start date of the modified event must be no earlier than one hour from the publication date");
                 }
@@ -114,8 +114,9 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventDto> findAllByParams(Long userId, Integer from, Integer size) {
         UserDto userDto = userService.getById(userId);
-        int page = from / size + 1;
-        List<Event> events = eventRepository.findAllByInitiatorId(userDto.getId(), PageRequest.of(page, size)).getContent();
+        int page = from / size;
+
+        List<Event> events = eventRepository.findAllByInitiatorId(userDto.getId(), PageRequest.of(page, size)).stream().toList();
 
         List<EventDto> eventDtos = eventMapper.toDto(events);
 
@@ -314,9 +315,18 @@ public class EventServiceImpl implements EventService {
         if (!Objects.isNull(newEventDto.getStateAction())) {
             switch (newEventDto.getStateAction()) {
                 case REJECT_EVENT -> currentEvent.setState(EventState.CANCELED);
-                case PUBLISH_EVENT -> currentEvent.setState(EventState.PUBLISHED);
-                case SEND_TO_REVIEW -> currentEvent.setRequestModeration(false);
-                case CANCEL_REVIEW -> currentEvent.setRequestModeration(true);
+                case PUBLISH_EVENT -> {
+                    currentEvent.setState(EventState.PUBLISHED);
+                    currentEvent.setPublishedOn(LocalDateTime.now());
+                }
+                case SEND_TO_REVIEW -> {
+                    currentEvent.setRequestModeration(false);
+                    currentEvent.setState(EventState.PENDING);
+                }
+                case CANCEL_REVIEW -> {
+                    currentEvent.setRequestModeration(true);
+                    currentEvent.setState(EventState.CANCELED);
+                }
             }
         }
 

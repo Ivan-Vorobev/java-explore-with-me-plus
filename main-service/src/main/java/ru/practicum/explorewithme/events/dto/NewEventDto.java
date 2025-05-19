@@ -16,26 +16,26 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class NewEventDto {
-    @NotBlank
+    @NotBlank(groups = {RequestMethod.Create.class})
     private String title;
-    @NotBlank
+    @NotBlank(groups = {RequestMethod.Create.class})
     private String annotation;
-    @NotBlank
+    @NotBlank(groups = {RequestMethod.Create.class})
     private String description;
-    @NotNull
+    @NotNull(groups = {RequestMethod.Create.class})
     private Long category;
-    @NotNull
+    @NotNull(groups = {RequestMethod.Create.class})
     @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class) // Для входящих данных
     @JsonSerialize(using = CustomLocalDateTimeSerializer.class)     // Для исходящих данных
-    @EventStartDateTime
+    @EventStartDateTime(groups = {RequestMethod.Create.class, RequestMethod.Update.class})
     private LocalDateTime eventDate; // Формат: yyyy-MM-dd HH:mm:ss
-    @NotNull
+    @NotNull(groups = {RequestMethod.Create.class})
     private LocationDto location;
-    @NotNull
+    @NotNull(groups = {RequestMethod.Create.class})
     private Integer participantLimit;
-    @NotNull
+    @NotNull(groups = {RequestMethod.Create.class})
     private Boolean paid;
-    @NotNull
+    @NotNull(groups = {RequestMethod.Create.class})
     private Boolean requestModeration;
     private EventStateAction stateAction;
 }
