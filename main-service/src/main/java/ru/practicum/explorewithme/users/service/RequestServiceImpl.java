@@ -6,7 +6,6 @@ import ru.practicum.explorewithme.events.enumiration.EventState;
 import ru.practicum.explorewithme.events.model.Event;
 import ru.practicum.explorewithme.events.repository.EventRepository;
 import ru.practicum.explorewithme.exception.ConflictException;
-import ru.practicum.explorewithme.exception.NotFoundException;
 import ru.practicum.explorewithme.users.dto.ParticipationRequestDto;
 import ru.practicum.explorewithme.users.mapper.ParticipationRequestMapper;
 import ru.practicum.explorewithme.users.model.ParticipationRequest;
@@ -43,33 +42,14 @@ public class RequestServiceImpl implements RequestService {
         User user = userRepository.findById(userId)
                 .orElseThrow(notFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE, userId));
 
-        // check povtorniy query
-        if (requestRepository.countParticipationRequestByRequester_IdAndEvent_Id(userId, eventId) != 0) {
-            throw new ConflictException("duplicate request");
-        }
+        checkConstraintsForParticipationRequests(event, eventId, userId);
 
-        // check nelzya dobavit request na svoy sobitie
-        if (event.getInitiator().getId() == userId) {
-            throw new ConflictException("initiator userid");
-        }
+        ParticipationRequest participationRequest = ParticipationRequest.builder()
+                .requester(user)
+                .event(event)
+                .status(event.getRequestModeration() ? RequestStatus.PENDING : RequestStatus.CONFIRMED)
+                .build();
 
-        // check nelzya ychavstovat' v neopubl sobitii
-        if (event.getState() != EventState.PUBLISHED) {
-            throw new ConflictException("published");
-        }
-
-        // check nelzya ychavstovat' v neopubl sobitii
-        if (event.getParticipantLimit() == requestRepository.countParticipationRequestByEvent_Id(eventId)) {
-            throw new ConflictException("count");
-        }
-        ParticipationRequest participationRequest = new ParticipationRequest();
-        participationRequest.setRequester(user);
-        participationRequest.setEvent(event);
-        if (!event.getRequestModeration()) {
-            participationRequest.setStatus(RequestStatus.CONFIRMED);
-        } else {
-            participationRequest.setStatus(RequestStatus.PENDING);
-        }
         requestRepository.save(participationRequest);
 
         return ParticipationRequestMapper.mapToDTO(participationRequest);
@@ -81,5 +61,24 @@ public class RequestServiceImpl implements RequestService {
         // TODO: save
         // TODO: return
         return null;
+    }
+
+    private void checkConstraintsForParticipationRequests(Event event, long eventId, long userId) {
+        if (!(checkDuplicateRequest(userId, eventId) && checkInitiatorId(event, userId)
+                && checkMemberOfNotPublishedEvent(event, eventId) && event.getState() != EventState.PUBLISHED)) {
+            throw new ConflictException("Conflict on adding request");
+        }
+    }
+
+    private boolean checkDuplicateRequest(long userId, long eventId) {
+        return requestRepository.countParticipationRequestByRequesterIdAndEvent_Id(userId, eventId) != 0;
+    }
+
+    private boolean checkInitiatorId(Event event, long userId) {
+        return event.getInitiator().getId() == userId;
+    }
+
+    private boolean checkMemberOfNotPublishedEvent(Event event, long eventId) {
+        return event.getParticipantLimit() == requestRepository.countParticipationRequestByEvent_Id(eventId);
     }
 }

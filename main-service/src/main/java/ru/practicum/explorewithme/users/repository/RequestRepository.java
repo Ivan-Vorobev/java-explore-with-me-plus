@@ -8,7 +8,7 @@ import java.util.List;
 public interface RequestRepository extends JpaRepository<ParticipationRequest, Long> {
     List<ParticipationRequest> findParticipationRequestByRequester_Id(long userId);
 
-    long countParticipationRequestByRequester_IdAndEvent_Id(long userId, long eventId);
+    long countParticipationRequestByRequesterIdAndEvent_Id(long userId, long eventId);
 
     long countParticipationRequestByEvent_Id(long eventId);
 }

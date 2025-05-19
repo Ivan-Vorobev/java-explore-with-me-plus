@@ -9,7 +9,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
+@Builder
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "participation_requests", schema = "public")
 public class ParticipationRequest {
 
