@@ -1,5 +1,6 @@
 package ru.practicum.explorewithme.users.repository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +14,9 @@ public interface RequestRepository extends JpaRepository<ParticipationRequest, L
 
     List<ParticipationRequest> findParticipationRequestByRequester_Id(long userId);
 
+    @EntityGraph(type = EntityGraph.EntityGraphType.LOAD, attributePaths = {"requester"})
+    List<ParticipationRequest> findParticipationRequestByRequester_IdAndEvent_Id(long userId, long eventId);
+
     long countParticipationRequestByRequesterIdAndEvent_Id(long userId, long eventId);
 
     long countParticipationRequestByEvent_Id(long eventId);
@@ -21,4 +25,12 @@ public interface RequestRepository extends JpaRepository<ParticipationRequest, L
     List<ParticipationRequest> findEventsCountByStatus(@Param("eventIds") List<Long> eventIds, @Param("status") RequestStatus status);
 
     Optional<ParticipationRequest> findParticipationRequestByIdAndRequester_Id(long requestId, long userId);
+
+    List<ParticipationRequest> findParticipationRequestById(Long id);
+
+    List<ParticipationRequest> findParticipationRequestByRequesterId(long userId);
+
+    List<ParticipationRequest> findParticipationRequestByEvent_Id(long eventId);
+
+    List<ParticipationRequest> findParticipationRequestByEvent_IdAndEvent_Initiator_Id(long eventId, long userId);
 }

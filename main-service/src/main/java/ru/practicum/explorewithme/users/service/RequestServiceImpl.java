@@ -6,7 +6,9 @@ import ru.practicum.explorewithme.events.enumiration.EventState;
 import ru.practicum.explorewithme.events.model.Event;
 import ru.practicum.explorewithme.events.repository.EventRepository;
 import ru.practicum.explorewithme.exception.ConflictException;
+import ru.practicum.explorewithme.users.dto.ChangeRequestStatusDto;
 import ru.practicum.explorewithme.users.dto.ParticipationRequestDto;
+import ru.practicum.explorewithme.users.dto.UserParticipationRequestDto;
 import ru.practicum.explorewithme.users.mapper.ParticipationRequestMapper;
 import ru.practicum.explorewithme.users.model.ParticipationRequest;
 import ru.practicum.explorewithme.users.model.RequestStatus;
@@ -52,7 +54,8 @@ public class RequestServiceImpl implements RequestService {
         ParticipationRequest participationRequest = ParticipationRequest.builder()
                 .requester(user)
                 .event(event)
-                .status(event.getRequestModeration() && event.getParticipantLimit() != 0 ? RequestStatus.PENDING : RequestStatus.CONFIRMED)
+                .status(event.getRequestModeration() && event.getParticipantLimit() != 0 ?
+                        RequestStatus.PENDING : RequestStatus.CONFIRMED)
                 .created(LocalDateTime.now())
                 .requestsCount(0)
                 .build();
@@ -66,16 +69,40 @@ public class RequestServiceImpl implements RequestService {
     public ParticipationRequestDto cancelRequest(long userId, long requestId) {
 
         ParticipationRequest participationRequest = requestRepository.findParticipationRequestByIdAndRequester_Id(requestId, userId)
-                .orElseThrow(notFoundException("Запрос {0} на участие пользователя {1}", requestId, userId));
+                .orElseThrow(notFoundException("Запрос {0} на участие пользователя {1} не найден!", requestId, userId));
         participationRequest.setStatus(RequestStatus.CANCELED);
         requestRepository.save(participationRequest);
 
         return ParticipationRequestMapper.mapToDTO(participationRequest);
     }
 
+    @Override
+    public List<ParticipationRequestDto> findUserRequestsOnEvent(long userId, long eventId) {
+        return ParticipationRequestMapper.mapToDTO(
+                requestRepository.findParticipationRequestByEvent_IdAndEvent_Initiator_Id(eventId, userId));
+    }
+
+    @Override
+    public UserParticipationRequestDto patchRequestStatus(ChangeRequestStatusDto changeRequestStatusDto) {
+        for (long requestId : changeRequestStatusDto.getRequestIds()) {
+            ParticipationRequest participationRequest = requestRepository.findById(requestId).orElseThrow(notFoundException("Запрос {0} на участие не найден", requestId));
+            checkParticipantLimitEqualRequestsOnEvent(participationRequest.getEvent());
+            checkOnNotPublishedEvent(participationRequest.getEvent());
+        }
+
+        return null;
+
+    }
+
     private void checkOnNotPublishedEvent(Event event) {
         if (event.getState() != EventState.PUBLISHED) {
             throw new ConflictException("Event is not published");
+        }
+    }
+
+    private void checkOnRequestOnPendingState(Event event) {
+        if (event.getState() != EventState.PENDING) {
+            throw new ConflictException("Event is not pending state");
         }
     }
 
