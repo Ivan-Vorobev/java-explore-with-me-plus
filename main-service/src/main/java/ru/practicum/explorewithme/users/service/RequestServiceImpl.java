@@ -6,7 +6,6 @@ import ru.practicum.explorewithme.events.enumiration.EventState;
 import ru.practicum.explorewithme.events.model.Event;
 import ru.practicum.explorewithme.events.repository.EventRepository;
 import ru.practicum.explorewithme.exception.ConflictException;
-import ru.practicum.explorewithme.exception.NotFoundException;
 import ru.practicum.explorewithme.users.dto.ParticipationRequestDto;
 import ru.practicum.explorewithme.users.mapper.ParticipationRequestMapper;
 import ru.practicum.explorewithme.users.model.ParticipationRequest;
@@ -15,6 +14,7 @@ import ru.practicum.explorewithme.users.model.User;
 import ru.practicum.explorewithme.users.repository.RequestRepository;
 import ru.practicum.explorewithme.users.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static ru.practicum.explorewithme.exception.NotFoundException.notFoundException;
@@ -40,15 +40,18 @@ public class RequestServiceImpl implements RequestService {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(notFoundException(EVENT_NOT_FOUND_EXCEPTION_MESSAGE, eventId));
-        User user = userRepository.findById(userId)
-                .orElseThrow(notFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE, userId));
 
         checkConstraintsForParticipationRequests(event, eventId, userId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(notFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE, userId));
 
         ParticipationRequest participationRequest = ParticipationRequest.builder()
                 .requester(user)
                 .event(event)
                 .status(event.getRequestModeration() ? RequestStatus.PENDING : RequestStatus.CONFIRMED)
+                .created(LocalDateTime.now())
+                .requestsCount(0)
                 .build();
 
         requestRepository.save(participationRequest);
@@ -69,21 +72,23 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private void checkConstraintsForParticipationRequests(Event event, long eventId, long userId) {
-        if (!(checkDuplicateRequest(userId, eventId) && checkInitiatorId(event, userId)
-                && checkMemberOfNotPublishedEvent(event, eventId) && event.getState() != EventState.PUBLISHED)) {
+        if (!isDuplicateRequest(userId, eventId) || !isUserIsInitiator(event, userId)
+                || event.getState().equals(EventState.PUBLISHED) || isParticipantLimitEqualRequestsOnEvent(event)) {
             throw new ConflictException("Conflict on adding request");
         }
     }
 
-    private boolean checkDuplicateRequest(long userId, long eventId) {
+    private boolean isDuplicateRequest(long userId, long eventId) {
+        System.out.println(requestRepository.countParticipationRequestByRequesterIdAndEvent_Id(userId, eventId));
         return requestRepository.countParticipationRequestByRequesterIdAndEvent_Id(userId, eventId) != 0;
     }
 
-    private boolean checkInitiatorId(Event event, long userId) {
+    private boolean isUserIsInitiator(Event event, long userId) {
         return event.getInitiator().getId() == userId;
     }
 
-    private boolean checkMemberOfNotPublishedEvent(Event event, long eventId) {
-        return event.getParticipantLimit() == requestRepository.countParticipationRequestByEvent_Id(eventId);
+    private boolean isParticipantLimitEqualRequestsOnEvent(Event event) {
+        return event.getParticipantLimit() == requestRepository.countParticipationRequestByEvent_Id(event.getId())
+                && event.getParticipantLimit() != 0;
     }
 }
