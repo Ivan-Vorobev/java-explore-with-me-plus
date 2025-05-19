@@ -63,12 +63,10 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public ParticipationRequestDto cancelRequest(long userId, long eventId) {
+    public ParticipationRequestDto cancelRequest(long userId, long requestId) {
 
-        ParticipationRequest participationRequest = requestRepository.findParticipationRequestByRequester_IdAndEvent_Id(userId, eventId)
-                .stream().findFirst()
-                .orElseThrow(notFoundException("Запроса на участие пользователя {0} в событии {1} - на найдено", userId, eventId));
-
+        ParticipationRequest participationRequest = requestRepository.findParticipationRequestByIdAndRequester_Id(requestId, userId)
+                .orElseThrow(notFoundException("Запрос {0} на участие пользователя {1}", requestId, userId));
         participationRequest.setStatus(RequestStatus.CANCELED);
         requestRepository.save(participationRequest);
 

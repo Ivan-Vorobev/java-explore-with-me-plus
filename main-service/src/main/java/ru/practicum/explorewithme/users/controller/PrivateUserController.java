@@ -35,11 +35,11 @@ public class PrivateUserController {
         return requestService.save(userId, eventId);
     }
 
-    @PatchMapping("/{userId}/requests/{eventId}/cancel")
+    @PatchMapping("/{userId}/requests/{requestId}/cancel")
     @ResponseStatus(HttpStatus.OK)
     public ParticipationRequestDto cancelRequest(@PathVariable long userId,
-                                                 @PathVariable long eventId) {
-        log.info("Выполняется отмена запроса пользователя {} на участие в событии: {}", userId, eventId);
-        return requestService.cancelRequest(userId, eventId);
+                                                 @PathVariable long requestId) {
+        log.info("Выполняется отмена запроса пользователя {} на участие по запросу: {}", userId, requestId);
+        return requestService.cancelRequest(userId, requestId);
     }
 }
