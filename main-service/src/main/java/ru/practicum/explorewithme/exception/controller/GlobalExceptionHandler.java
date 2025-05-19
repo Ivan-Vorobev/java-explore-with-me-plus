@@ -1,8 +1,10 @@
 package ru.practicum.explorewithme.exception.controller;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -26,7 +28,7 @@ public class GlobalExceptionHandler {
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
         String stackTrace = sw.toString();
-        return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR,"Error ...", e.getMessage(), stackTrace);
+        return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Error ...", e.getMessage(), stackTrace);
     }
 
     @ExceptionHandler
@@ -37,7 +39,7 @@ public class GlobalExceptionHandler {
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
         String stackTrace = sw.toString();
-        return new ApiError(HttpStatus.NOT_FOUND,"The requested object was not found.", e.getMessage(), stackTrace);
+        return new ApiError(HttpStatus.NOT_FOUND, "The requested object was not found.", e.getMessage(), stackTrace);
     }
 
     @ExceptionHandler
@@ -48,7 +50,7 @@ public class GlobalExceptionHandler {
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
         String stackTrace = sw.toString();
-        return new ApiError(HttpStatus.BAD_REQUEST,"Error with the input parameter.", e.getMessage(), stackTrace);
+        return new ApiError(HttpStatus.BAD_REQUEST, "Error with the input parameter.", e.getMessage(), stackTrace);
     }
 
     @ExceptionHandler
@@ -59,7 +61,7 @@ public class GlobalExceptionHandler {
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
         String stackTrace = sw.toString();
-        return new ApiError(HttpStatus.CONFLICT,"The data must be unique.", e.getMessage(), stackTrace);
+        return new ApiError(HttpStatus.CONFLICT, "The data must be unique.", e.getMessage(), stackTrace);
     }
 
     @ExceptionHandler
@@ -70,6 +72,29 @@ public class GlobalExceptionHandler {
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
         String stackTrace = sw.toString();
-        return new ApiError(HttpStatus.CONFLICT,"Deleting related data is not allowed.", e.getMessage(), stackTrace);
+        return new ApiError(HttpStatus.CONFLICT, "Deleting related data is not allowed.", e.getMessage(), stackTrace);
+    }
+
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ApiError handleOnConstraintValidationException(final ConstraintViolationException e) {
+        log.error("{} {}", HttpStatus.BAD_REQUEST, e.getMessage());
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        String stackTrace = sw.toString();
+        return new ApiError(HttpStatus.BAD_REQUEST, "Constraint Validation Exception.", e.getMessage(), stackTrace);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ApiError handleOnMissingServletRequestParameterException(final MissingServletRequestParameterException e) {
+        log.error("{} {}", HttpStatus.BAD_REQUEST, e.getMessage());
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        String stackTrace = sw.toString();
+        return new ApiError(HttpStatus.BAD_REQUEST, "MissingServletRequestParameterException Validation Exception.", e.getMessage(), stackTrace);
     }
 }
