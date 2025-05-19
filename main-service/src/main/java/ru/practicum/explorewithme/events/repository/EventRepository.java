@@ -1,6 +1,7 @@
 package ru.practicum.explorewithme.events.repository;
 
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,9 +9,13 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.query.Param;
+import org.springframework.util.StringUtils;
 import ru.practicum.explorewithme.events.controller.AdminEventParams;
 import ru.practicum.explorewithme.events.controller.UserEventParams;
+import ru.practicum.explorewithme.events.enumiration.EventState;
 import ru.practicum.explorewithme.events.model.Event;
+import ru.practicum.explorewithme.users.model.ParticipationRequest;
+import ru.practicum.explorewithme.users.model.RequestStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,31 +59,56 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
     interface UserEventSpecification {
         static Specification<Event> withUserEventParams(UserEventParams params) {
             return (root, query, criteriaBuilder) -> {
-                // Создаем подзапрос для подсчета подтвержденных запросов
-                Subquery<Long> subquery = query.subquery(Long.class);
-//                Root<Request> requestRoot = subquery.from(Request.class);
-//                subquery.select(criteriaBuilder.count(requestRoot.get("id")))
-//                        .where(
-//                                criteriaBuilder.equal(requestRoot.get("event").get("id"), root.get("id")),
-//                                criteriaBuilder.equal(requestRoot.get("status"), RequestStatus.CONFIRMED)
-//                        )
-//                        .groupBy(requestRoot.get("event").get("id"));
+
 
                 List<Predicate> predicates = new ArrayList<>();
 
-//                // Фильтр по пользователям (initiator)
-//                if (params.getText() != null && !params.getText().isEmpty()) {
-//                    predicates.add(root.get("annotation").(params.getText()));
-//                }
+                predicates.add(criteriaBuilder.equal(root.get("state"), EventState.PUBLISHED));
 
-//                // Фильтр по состояниям
-//                if (params.getStates() != null && !params.getStates().isEmpty()) {
-//                    predicates.add(root.get("state").in(params.getStates()));
-//                }
+                // Поиск по annotation или description
+                if (StringUtils.hasText(params.getText())) {
+                    String likePattern = "%" + params.getText().toLowerCase() + "%";
+                    predicates.add(
+                            criteriaBuilder.or(
+                                    criteriaBuilder.like(criteriaBuilder.lower(root.get("annotation")), likePattern),
+                                    criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), likePattern)
+                            )
+                    );
+                }
 
                 // Фильтр по категориям
                 if (params.getCategories() != null && !params.getCategories().isEmpty()) {
                     predicates.add(root.get("category").get("id").in(params.getCategories()));
+                }
+
+                // Только платные события
+                if (params.getPaid() != null) {
+                    if (params.getPaid()) {
+                        predicates.add(criteriaBuilder.isTrue(root.get("paid")));
+                    } else {
+                        predicates.add(criteriaBuilder.isFalse(root.get("paid")));
+
+                    }
+                }
+
+                // Проверка лимита участников
+                if (params.getOnlyAvailable() != null && params.getOnlyAvailable()) {
+                    // Создаем подзапрос для подсчета подтвержденных запросов
+                    Subquery<Long> subquery = query.subquery(Long.class);
+                    Root<ParticipationRequest> requestRoot = subquery.from(ParticipationRequest.class);
+                    subquery.select(criteriaBuilder.count(requestRoot.get("id")))
+                            .where(
+                                    criteriaBuilder.equal(requestRoot.get("event").get("id"), root.get("id")),
+                                    criteriaBuilder.equal(requestRoot.get("status"), RequestStatus.CONFIRMED)
+                            )
+                            .groupBy(requestRoot.get("event").get("id"));
+
+                    predicates.add(
+                            criteriaBuilder.or(
+                                    criteriaBuilder.isNull(subquery),
+                                    criteriaBuilder.lessThan(subquery, root.get("participantLimit"))
+                            )
+                    );
                 }
 
                 // Фильтр по диапазону дат

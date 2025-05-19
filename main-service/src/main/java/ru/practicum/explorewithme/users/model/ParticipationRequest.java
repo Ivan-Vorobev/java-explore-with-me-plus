@@ -2,6 +2,7 @@ package ru.practicum.explorewithme.users.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.practicum.explorewithme.events.model.Event;
 
 import java.time.LocalDateTime;
 
@@ -32,4 +33,7 @@ public class ParticipationRequest {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RequestStatus status;
+
+    @Transient
+    private Integer requestsCount;
 }

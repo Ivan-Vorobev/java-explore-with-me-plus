@@ -1,5 +1,6 @@
 package ru.practicum.explorewithme.events.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import ru.practicum.explorewithme.events.controller.AdminEventParams;
 import ru.practicum.explorewithme.events.controller.UserEventParams;
 import ru.practicum.explorewithme.events.dto.EventDto;
@@ -23,5 +24,9 @@ public interface EventService {
 
     List<EventDto> findAllByAdminParams(AdminEventParams adminEventParams);
 
-    List<EventDto> findAllByAdminParams(UserEventParams userEventParams);
+    List<EventDto> findAllByUserParams(UserEventParams userEventParams);
+
+    void sendHit(HttpServletRequest request);
+
+    EventDto findPublishedEvent(Long eventId);
 }

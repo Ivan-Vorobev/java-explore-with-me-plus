@@ -17,7 +17,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<ParticipationRequestDto> findAllRequestsByUserId(long userId) {
-        return requestMapper.mapToDto(requestRepository.findParticipationRequestByRequester_Id(userId));
+//        return requestMapper.mapToDto(requestRepository.findParticipationRequestByRequester_Id(userId));
+        return null;
     }
 
     @Override

@@ -27,7 +27,7 @@ public class PrivateUserController {
         return requestService.findAllRequestsByUserId(userId);
     }
 
-    @GetMapping(USER_ID_PATH + REQUESTS_PATH)
+    @PostMapping(USER_ID_PATH + REQUESTS_PATH)
     @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto save(@PathVariable("user-id") long userId,
                                         @RequestParam("eventId") long eventId) {

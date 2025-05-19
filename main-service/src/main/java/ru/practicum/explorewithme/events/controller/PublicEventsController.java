@@ -1,9 +1,12 @@
 package ru.practicum.explorewithme.events.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.client.hit.HitClient;
 import ru.practicum.explorewithme.events.dto.EventDto;
 import ru.practicum.explorewithme.events.service.EventService;
 
@@ -16,9 +19,11 @@ import java.util.List;
 @Slf4j
 public class PublicEventsController {
     private final EventService eventService;
+    private final HitClient hitClient;
 
     @GetMapping
     public List<EventDto> getEvents(
+            HttpServletRequest request,
             @RequestParam String text,
             @RequestParam List<Long> categories,
             @RequestParam Boolean paid,
@@ -42,8 +47,19 @@ public class PublicEventsController {
                 .size(size)
                 .build();
 
-        return eventService.findAllByAdminParams(userEventParams);
+        eventService.sendHit(request);
+        return eventService.findAllByUserParams(userEventParams);
     }
+
+    @GetMapping("/{id}")
+    public EventDto getPublishedEvent(
+            HttpServletRequest request,
+            @NotNull @RequestParam Long eventId
+    ) {
+        eventService.sendHit(request);
+        return eventService.findPublishedEvent(eventId);
+    }
+
 //
 //    @PostMapping("/events")
 //    public EventDto createEvent(

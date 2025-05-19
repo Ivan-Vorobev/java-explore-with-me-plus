@@ -1,11 +1,14 @@
 package ru.practicum.explorewithme.events.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.client.hit.HitClient;
 import ru.practicum.client.stats.StatsClient;
+import ru.practicum.dto.CreateHitDTO;
 import ru.practicum.dto.HitsStatDTO;
 import ru.practicum.explorewithme.categories.dto.CategoryDto;
 import ru.practicum.explorewithme.categories.service.CategoryService;
@@ -22,6 +25,9 @@ import ru.practicum.explorewithme.exception.ConflictException;
 import ru.practicum.explorewithme.exception.NotFoundException;
 import ru.practicum.explorewithme.users.dto.ShortUserDto;
 import ru.practicum.explorewithme.users.dto.UserDto;
+import ru.practicum.explorewithme.users.model.ParticipationRequest;
+import ru.practicum.explorewithme.users.model.RequestStatus;
+import ru.practicum.explorewithme.users.repository.RequestRepository;
 import ru.practicum.explorewithme.users.service.UserService;
 
 import java.time.LocalDateTime;
@@ -38,6 +44,9 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final RequestRepository requestRepository;
+    private final HitClient hitClient;
+    private final StatsClient statsClient;
 
     @Override
     public EventDto addEvent(NewEventDto newEventDto, Long userId) {
@@ -166,7 +175,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventDto> findAllByAdminParams(UserEventParams userEventParams) {
+    public List<EventDto> findAllByUserParams(UserEventParams userEventParams) {
         PageRequest pageRequest = PageRequest.of(
                 userEventParams.getFrom() / userEventParams.getSize(),
                 userEventParams.getSize(),
@@ -179,7 +188,38 @@ public class EventServiceImpl implements EventService {
         loadViews(eventDtos, userEventParams.getRangeStart(), userEventParams.getRangeEnd());
         loadConfirmedRequests(eventDtos);
 
+        if (userEventParams.getSort().equals(UserEventParams.EventSortEnum.VIEWS)) {
+            eventDtos.sort(Comparator.comparing(EventDto::getViews).reversed());
+        }
+
         return eventDtos;
+    }
+
+    @Override
+    public void sendHit(HttpServletRequest request) {
+        hitClient.hit(CreateHitDTO
+                .builder()
+                .app("main-service")
+                .ip(request.getRemoteAddr())
+                .uri(request.getRequestURI())
+                .timestamp(LocalDateTime.now())
+                .build());
+    }
+
+    @Override
+    public EventDto findPublishedEvent(Long eventId) {
+        Event event = findEventById(eventId);
+
+        if (!event.getState().equals(EventState.PUBLISHED)) {
+            throw new NotFoundException("Event with id=" + eventId + " was not found");
+        }
+
+        EventDto eventDto = eventMapper.toDto(event);
+
+        loadViews(List.of(eventDto), event.getCreatedOn(), event.getEventDate());
+        loadConfirmedRequests(List.of(eventDto));
+
+        return eventDto;
     }
 
     private void checkInitiatorId(Event event, Long userId) {
@@ -194,8 +234,13 @@ public class EventServiceImpl implements EventService {
                 .map(EventDto::getId)
                 .toList();
 
-        // TODO:: перевести реквесты
-        Map<Long, Integer> requests = null;
+        Map<Long, Integer> requests = requestRepository
+                .findEventsCountByStatus(eventIds, RequestStatus.CONFIRMED)
+                .stream()
+                .collect(Collectors.toMap(
+                        req -> req.getEvent().getId(),
+                        ParticipationRequest::getRequestsCount
+                ));
 
         events.forEach(event -> {
             Integer requestCount = 0;
@@ -215,7 +260,7 @@ public class EventServiceImpl implements EventService {
                         event -> "/events/" + event.getId()
                 ));
 
-        Optional<Collection<HitsStatDTO>> hitsStatDTOS = new StatsClient().getAll(
+        Optional<Collection<HitsStatDTO>> hitsStatDTOS = statsClient.getAll(
                 start,
                 end,
                 eventIds.values().stream().toList(),

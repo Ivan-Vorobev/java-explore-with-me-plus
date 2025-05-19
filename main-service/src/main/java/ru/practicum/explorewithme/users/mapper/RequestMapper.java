@@ -9,9 +9,9 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface RequestMapper {
 
-    ParticipationRequest mapToModel(ParticipationRequestDto participationRequestDto);
+//    ParticipationRequest mapToModel(ParticipationRequestDto participationRequestDto);
 
-    ParticipationRequestDto mapToDto(ParticipationRequest participationRequest);
+//    ParticipationRequestDto mapToDto(ParticipationRequest participationRequest);
 
-    List<ParticipationRequestDto> mapToDto(List<ParticipationRequest> participationRequests);
+//    List<ParticipationRequestDto> mapToDto(List<ParticipationRequest> participationRequests);
 }
