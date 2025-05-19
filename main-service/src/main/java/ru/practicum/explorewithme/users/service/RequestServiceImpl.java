@@ -72,14 +72,13 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private void checkConstraintsForParticipationRequests(Event event, long eventId, long userId) {
-        if (!isDuplicateRequest(userId, eventId) || !isUserIsInitiator(event, userId)
-                || event.getState().equals(EventState.PUBLISHED) || isParticipantLimitEqualRequestsOnEvent(event)) {
+        if (!isDuplicateRequest(userId, eventId) && !isUserIsInitiator(event, userId)
+                && event.getState().equals(EventState.PUBLISHED) && isParticipantLimitEqualRequestsOnEvent(event)) {
             throw new ConflictException("Conflict on adding request");
         }
     }
 
     private boolean isDuplicateRequest(long userId, long eventId) {
-        System.out.println(requestRepository.countParticipationRequestByRequesterIdAndEvent_Id(userId, eventId));
         return requestRepository.countParticipationRequestByRequesterIdAndEvent_Id(userId, eventId) != 0;
     }
 
