@@ -2,10 +2,9 @@ package ru.practicum.explorewithme.events.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Data;
+import jakarta.validation.constraints.*;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 import ru.practicum.explorewithme.config.CustomLocalDateTimeDeserializer;
 import ru.practicum.explorewithme.config.CustomLocalDateTimeSerializer;
 import ru.practicum.explorewithme.constraint.EventStartDateTime;
@@ -15,12 +14,16 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
+@Jacksonized
 public class NewEventDto {
     @NotBlank(groups = {RequestMethod.Create.class})
+    @Size(min = 3, max = 120, groups = {RequestMethod.Create.class, RequestMethod.Update.class})
     private String title;
     @NotBlank(groups = {RequestMethod.Create.class})
+    @Size(min = 20, max = 2000, groups = {RequestMethod.Create.class, RequestMethod.Update.class})
     private String annotation;
     @NotBlank(groups = {RequestMethod.Create.class})
+    @Size(min = 20, max = 7000, groups = {RequestMethod.Create.class, RequestMethod.Update.class})
     private String description;
     @NotNull(groups = {RequestMethod.Create.class})
     private Long category;
@@ -31,11 +34,12 @@ public class NewEventDto {
     private LocalDateTime eventDate; // Формат: yyyy-MM-dd HH:mm:ss
     @NotNull(groups = {RequestMethod.Create.class})
     private LocationDto location;
-    @NotNull(groups = {RequestMethod.Create.class})
-    private Integer participantLimit;
-    @NotNull(groups = {RequestMethod.Create.class})
-    private Boolean paid;
-    @NotNull(groups = {RequestMethod.Create.class})
-    private Boolean requestModeration;
+    @PositiveOrZero(groups = {RequestMethod.Create.class, RequestMethod.Update.class})
+    @Builder.Default
+    private Integer participantLimit = 0;
+    @Builder.Default
+    private Boolean paid = false;
+    @Builder.Default
+    private Boolean requestModeration = true;
     private EventStateAction stateAction;
 }

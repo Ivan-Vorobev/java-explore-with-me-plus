@@ -17,6 +17,7 @@ import ru.practicum.explorewithme.events.model.Event;
 import ru.practicum.explorewithme.users.model.ParticipationRequest;
 import ru.practicum.explorewithme.users.model.RequestStatus;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,7 +115,10 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
                 // Фильтр по диапазону дат
                 if (params.getRangeStart() != null) {
                     predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("eventDate"), params.getRangeStart()));
+                } else {
+                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("eventDate"), LocalDateTime.now()));
                 }
+
                 if (params.getRangeEnd() != null) {
                     predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("eventDate"), params.getRangeEnd()));
                 }

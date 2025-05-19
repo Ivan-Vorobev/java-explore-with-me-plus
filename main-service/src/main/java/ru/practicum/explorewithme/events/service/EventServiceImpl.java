@@ -180,7 +180,7 @@ public class EventServiceImpl implements EventService {
         loadViews(eventDtos, userEventParams.getRangeStart(), userEventParams.getRangeEnd());
         loadConfirmedRequests(eventDtos);
 
-        if (userEventParams.getSort().equals(UserEventParams.EventSortEnum.VIEWS)) {
+        if (userEventParams.getSort().isPresent() && userEventParams.getSort().get().equals(UserEventParams.EventSortEnum.VIEWS)) {
             eventDtos.sort(Comparator.comparing(EventDto::getViews).reversed());
         }
 
@@ -256,7 +256,7 @@ public class EventServiceImpl implements EventService {
                 start,
                 end,
                 eventIds.values().stream().toList(),
-                false
+                true
         );
 
         if (hitsStatDTOS.isPresent() && !hitsStatDTOS.get().isEmpty()) {

@@ -25,11 +25,11 @@ public class AdminEventsController {
 
     @GetMapping
     public List<EventDto> getEvents(
-            @RequestParam List<Long> users,
-            @RequestParam List<EventState> states,
-            @RequestParam List<Long> categories,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+            @RequestParam(required = false) List<Long> users,
+            @RequestParam(required = false) List<EventState> states,
+            @RequestParam(required = false) List<Long> categories,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
             @RequestParam(value = "from", defaultValue = "0") Integer from,
             @RequestParam(value = "to", defaultValue = "10") Integer size
     ) {

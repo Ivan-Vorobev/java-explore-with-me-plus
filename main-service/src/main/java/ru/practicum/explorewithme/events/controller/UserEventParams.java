@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Builder
@@ -15,7 +16,7 @@ public class UserEventParams {
     private Boolean onlyAvailable;
     private LocalDateTime rangeStart;
     private LocalDateTime rangeEnd;
-    private EventSortEnum sort;
+    private Optional<EventSortEnum> sort;
     private Integer from;
     private Integer size;
 
