@@ -1,8 +1,10 @@
 package ru.practicum.explorewithme.users.controller;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.users.dto.ParticipationRequestDto;
 import ru.practicum.explorewithme.users.service.RequestService;
@@ -10,10 +12,11 @@ import ru.practicum.explorewithme.users.service.RequestService;
 import java.util.List;
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
-public class PrivateUserController {
+public class PublicUserController {
 
     private static final String USER_ID_PATH = "/{user-id}";
     private static final String REQUESTS_PATH = "/requests";
@@ -30,7 +33,7 @@ public class PrivateUserController {
     @PostMapping(USER_ID_PATH + REQUESTS_PATH)
     @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto save(@PathVariable("user-id") long userId,
-                                        @RequestParam("eventId") long eventId) {
+                                        @RequestParam("eventId") @NotNull long eventId) {
         log.info("Выполняется добавление запроса от пользователя {} на участие в событии: {}", userId, eventId);
         return requestService.save(userId, eventId);
     }
