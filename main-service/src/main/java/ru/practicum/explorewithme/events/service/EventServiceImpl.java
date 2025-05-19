@@ -10,7 +10,7 @@ import ru.practicum.client.hit.HitClient;
 import ru.practicum.client.stats.StatsClient;
 import ru.practicum.dto.CreateHitDTO;
 import ru.practicum.dto.HitsStatDTO;
-import ru.practicum.explorewithme.categories.dto.CategoryDto;
+import ru.practicum.explorewithme.categories.model.Category;
 import ru.practicum.explorewithme.categories.service.CategoryService;
 import ru.practicum.explorewithme.events.controller.AdminEventParams;
 import ru.practicum.explorewithme.events.controller.UserEventParams;
@@ -23,10 +23,10 @@ import ru.practicum.explorewithme.events.model.Event;
 import ru.practicum.explorewithme.events.repository.EventRepository;
 import ru.practicum.explorewithme.exception.ConflictException;
 import ru.practicum.explorewithme.exception.NotFoundException;
-import ru.practicum.explorewithme.users.dto.ShortUserDto;
 import ru.practicum.explorewithme.users.dto.UserDto;
 import ru.practicum.explorewithme.users.model.ParticipationRequest;
 import ru.practicum.explorewithme.users.model.RequestStatus;
+import ru.practicum.explorewithme.users.model.User;
 import ru.practicum.explorewithme.users.repository.RequestRepository;
 import ru.practicum.explorewithme.users.service.UserService;
 
@@ -50,26 +50,17 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventDto addEvent(NewEventDto newEventDto, Long userId) {
-        UserDto userDto = userService.getById(userId);
-        CategoryDto categoryDto = categoryService.getCategory(newEventDto.getCategory());
+        User user = userService.getUser(userId);
+        Category category = categoryService.getCategoryById(newEventDto.getCategory());
 
         EventDto eventDto = eventMapper.convertShortDto(newEventDto);
         Event event = eventMapper.toModel(eventDto);
+        event.setInitiator(user);
+        event.setCategory(category);
+        event.setCreatedOn(LocalDateTime.now());
 
         Event savedEvent = eventRepository.save(event);
         EventDto savedEventDto = eventMapper.toDto(savedEvent);
-        savedEventDto.setCategory(CategoryDto
-                .builder()
-                .id(categoryDto.getId())
-                .name(categoryDto.getName())
-                .build()
-        );
-        savedEventDto.setInitiator(ShortUserDto
-                .builder()
-                .id(userDto.getId())
-                .name(userDto.getName())
-                .build()
-        );
 
         savedEventDto.setViews(0L);
         savedEventDto.setConfirmedRequests(0);

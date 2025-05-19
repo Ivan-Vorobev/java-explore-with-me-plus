@@ -2,6 +2,7 @@ package ru.practicum.explorewithme.users.service;
 
 import ru.practicum.explorewithme.users.dto.NewUserRequest;
 import ru.practicum.explorewithme.users.dto.UserDto;
+import ru.practicum.explorewithme.users.model.User;
 
 import java.util.List;
 
@@ -11,4 +12,6 @@ public interface UserService {
     void deleteUser(Long userId);
 
     UserDto getById(Long userId);
+
+    User getUser(Long userId);
 }
