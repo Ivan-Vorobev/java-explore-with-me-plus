@@ -7,6 +7,7 @@ import ru.practicum.explorewithme.users.model.ParticipationRequest;
 import ru.practicum.explorewithme.users.model.RequestStatus;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RequestRepository extends JpaRepository<ParticipationRequest, Long> {
 
@@ -14,10 +15,12 @@ public interface RequestRepository extends JpaRepository<ParticipationRequest, L
 
     long countParticipationRequestByRequesterIdAndEvent_Id(long userId, long eventId);
 
-    long countParticipationRequestByEvent_Id(long eventId);
-
-    List<ParticipationRequest> findParticipationRequestByRequester_IdAndEvent_Id(Long requesterId, Long eventId);
-
     @Query("SELECT r.event, count(r.id) as requestsCount FROM ParticipationRequest r WHERE r.status = :status AND r.event.id in :eventIds GROUP BY r.event ORDER BY requestsCount ASC")
     List<ParticipationRequest> findEventsCountByStatus(@Param("eventIds") List<Long> eventIds, @Param("status") RequestStatus status);
+
+    Optional<ParticipationRequest> findParticipationRequestByIdAndRequester_Id(long requestId, long userId);
+
+    List<ParticipationRequest> findParticipationRequestByEvent_IdAndEvent_Initiator_Id(long eventId, long userId);
+
+    long countParticipationRequestByEvent_IdAndStatus(long eventId, RequestStatus status);
 }

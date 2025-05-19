@@ -31,7 +31,7 @@ public class ParticipationRequest {
     private User requester;
 
     @Column(nullable = false)
-    private LocalDateTime created = LocalDateTime.now();
+    private LocalDateTime created;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

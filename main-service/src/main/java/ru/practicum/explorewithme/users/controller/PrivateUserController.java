@@ -39,7 +39,7 @@ public class PrivateUserController {
     @ResponseStatus(HttpStatus.OK)
     public ParticipationRequestDto cancelRequest(@PathVariable long userId,
                                                  @PathVariable long requestId) {
-        log.info("Выполняется отмена запроса пользователя {} на участие в событии: {}", userId, requestId);
+        log.info("Выполняется отмена запроса пользователя {} на участие по запросу: {}", userId, requestId);
         return requestService.cancelRequest(userId, requestId);
     }
 }
