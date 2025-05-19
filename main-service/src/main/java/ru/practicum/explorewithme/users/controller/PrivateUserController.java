@@ -16,32 +16,29 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
-public class PublicUserController {
-
-    private static final String USER_ID_PATH = "/{user-id}";
-    private static final String REQUESTS_PATH = "/requests";
+public class PrivateUserController {
 
     private final RequestService requestService;
 
-    @GetMapping(USER_ID_PATH + REQUESTS_PATH)
+    @GetMapping("/{userId}/requests")
     @ResponseStatus(HttpStatus.OK)
-    public List<ParticipationRequestDto> findAllRequests(@PathVariable("user-id") long userId) {
+    public List<ParticipationRequestDto> findAllRequests(@PathVariable long userId) {
         log.info("Выполняется получение всех запросов пользователя: {}", userId);
         return requestService.findAllRequestsByUserId(userId);
     }
 
-    @PostMapping(USER_ID_PATH + REQUESTS_PATH)
+    @PostMapping("/{userId}/requests")
     @ResponseStatus(HttpStatus.CREATED)
-    public ParticipationRequestDto save(@PathVariable("user-id") long userId,
+    public ParticipationRequestDto save(@PathVariable long userId,
                                         @RequestParam("eventId") @NotNull long eventId) {
         log.info("Выполняется добавление запроса от пользователя {} на участие в событии: {}", userId, eventId);
         return requestService.save(userId, eventId);
     }
 
-    @PatchMapping(USER_ID_PATH + REQUESTS_PATH + "/{request-id}/cancel")
+    @PatchMapping("/{userId}/requests/{requestId}/cancel")
     @ResponseStatus(HttpStatus.OK)
-    public ParticipationRequestDto cancelRequest(@PathVariable("user-id") long userId,
-                                                 @PathVariable("request-id") long requestId) {
+    public ParticipationRequestDto cancelRequest(@PathVariable long userId,
+                                                 @PathVariable long requestId) {
         log.info("Выполняется отмена запроса пользователя {} на участие в событии: {}", userId, requestId);
         return requestService.cancelRequest(userId, requestId);
     }
