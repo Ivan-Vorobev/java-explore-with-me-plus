@@ -41,11 +41,15 @@ public class RequestServiceImpl implements RequestService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(notFoundException(EVENT_NOT_FOUND_EXCEPTION_MESSAGE, eventId));
 
-        checkConstraintsForParticipationRequests(event, eventId, userId);
-
         User user = userRepository.findById(userId)
                 .orElseThrow(notFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE, userId));
 
+        checkDuplicateRequest(userId, eventId);
+        checkUserIsInitiator(event, userId);
+        checkParticipantLimitEqualRequestsOnEvent(event);
+        checkOnNotPublishedEvent(event);
+
+        // todo: validation on request and limit
         ParticipationRequest participationRequest = ParticipationRequest.builder()
                 .requester(user)
                 .event(event)
@@ -62,6 +66,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public ParticipationRequestDto cancelRequest(long userId, long eventId) {
 
+        // todo: change error description
         ParticipationRequest participationRequest = requestRepository.findParticipationRequestByRequester_IdAndEvent_Id(userId, eventId)
                 .stream().findFirst().orElseThrow(notFoundException(EVENT_NOT_FOUND_EXCEPTION_MESSAGE, eventId));
 
@@ -71,23 +76,28 @@ public class RequestServiceImpl implements RequestService {
         return ParticipationRequestMapper.mapToDTO(participationRequest);
     }
 
-    private void checkConstraintsForParticipationRequests(Event event, long eventId, long userId) {
-        if (!isDuplicateRequest(userId, eventId) && !isUserIsInitiator(event, userId)
-                && event.getState().equals(EventState.PUBLISHED) && isParticipantLimitEqualRequestsOnEvent(event)) {
-            throw new ConflictException("Conflict on adding request");
+    private void checkOnNotPublishedEvent(Event event) {
+        if (event.getState() != EventState.PUBLISHED) {
+            throw new ConflictException("Event is not published");
         }
     }
 
-    private boolean isDuplicateRequest(long userId, long eventId) {
-        return requestRepository.countParticipationRequestByRequesterIdAndEvent_Id(userId, eventId) != 0;
+    private void checkDuplicateRequest(long userId, long eventId) {
+        if (requestRepository.countParticipationRequestByRequesterIdAndEvent_Id(userId, eventId) != 0) {
+            throw new ConflictException("Duplicate request");
+        }
     }
 
-    private boolean isUserIsInitiator(Event event, long userId) {
-        return event.getInitiator().getId() == userId;
+    private void checkUserIsInitiator(Event event, long userId) {
+        if (event.getInitiator().getId() == userId) {
+            throw new ConflictException("User is Initiator of Request Exception");
+        }
     }
 
-    private boolean isParticipantLimitEqualRequestsOnEvent(Event event) {
-        return event.getParticipantLimit() == requestRepository.countParticipationRequestByEvent_Id(event.getId())
-                && event.getParticipantLimit() != 0;
+    private void checkParticipantLimitEqualRequestsOnEvent(Event event) {
+        if (event.getParticipantLimit() == requestRepository.countParticipationRequestByEvent_Id(event.getId())
+                && event.getParticipantLimit() != 0) {
+            throw new ConflictException("Participant limit is equal to request limit");
+        }
     }
 }
