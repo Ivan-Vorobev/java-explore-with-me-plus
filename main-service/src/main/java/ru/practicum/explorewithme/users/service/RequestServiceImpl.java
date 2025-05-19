@@ -49,11 +49,10 @@ public class RequestServiceImpl implements RequestService {
         checkParticipantLimitEqualRequestsOnEvent(event);
         checkOnNotPublishedEvent(event);
 
-        // todo: validation on request and limit
         ParticipationRequest participationRequest = ParticipationRequest.builder()
                 .requester(user)
                 .event(event)
-                .status(event.getRequestModeration() ? RequestStatus.PENDING : RequestStatus.CONFIRMED)
+                .status(event.getRequestModeration() && event.getParticipantLimit() != 0 ? RequestStatus.PENDING : RequestStatus.CONFIRMED)
                 .created(LocalDateTime.now())
                 .requestsCount(0)
                 .build();
@@ -66,9 +65,9 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public ParticipationRequestDto cancelRequest(long userId, long eventId) {
 
-        // todo: change error description
         ParticipationRequest participationRequest = requestRepository.findParticipationRequestByRequester_IdAndEvent_Id(userId, eventId)
-                .stream().findFirst().orElseThrow(notFoundException(EVENT_NOT_FOUND_EXCEPTION_MESSAGE, eventId));
+                .stream().findFirst()
+                .orElseThrow(notFoundException("Запроса на участие пользователя {0} в событии {1} - на найдено", userId, eventId));
 
         participationRequest.setStatus(RequestStatus.CANCELED);
         requestRepository.save(participationRequest);
