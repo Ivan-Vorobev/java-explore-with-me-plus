@@ -78,7 +78,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .toList();
     }
 
-    private Category getCategoryById(Long categoryId) {
+    public Category getCategoryById(Long categoryId) {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d not found.", categoryId)));
     }

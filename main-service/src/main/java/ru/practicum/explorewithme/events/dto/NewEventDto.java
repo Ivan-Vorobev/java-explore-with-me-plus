@@ -9,6 +9,7 @@ import lombok.Data;
 import ru.practicum.explorewithme.config.CustomLocalDateTimeDeserializer;
 import ru.practicum.explorewithme.config.CustomLocalDateTimeSerializer;
 import ru.practicum.explorewithme.constraint.EventStartDateTime;
+import ru.practicum.explorewithme.events.enumiration.EventStateAction;
 
 import java.time.LocalDateTime;
 
@@ -36,4 +37,5 @@ public class NewEventDto {
     private Boolean paid;
     @NotNull
     private Boolean requestModeration;
+    private EventStateAction stateAction;
 }
