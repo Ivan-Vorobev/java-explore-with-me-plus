@@ -57,10 +57,14 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto cancelRequest(long userId, long eventId) {
-        // TODO: change pending to canceled
-        // TODO: save
-        // TODO: return
-        return null;
+
+        ParticipationRequest participationRequest = requestRepository.findParticipationRequestByRequester_IdAndEvent_Id(userId, eventId)
+                .stream().findFirst().orElseThrow(notFoundException(EVENT_NOT_FOUND_EXCEPTION_MESSAGE, eventId));
+
+        participationRequest.setStatus(RequestStatus.CANCELED);
+        requestRepository.save(participationRequest);
+
+        return ParticipationRequestMapper.mapToDTO(participationRequest);
     }
 
     private void checkConstraintsForParticipationRequests(Event event, long eventId, long userId) {
