@@ -1,9 +1,11 @@
 package ru.practicum.explorewithme.exception.controller;
 
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -20,8 +22,6 @@ import java.io.StringWriter;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -77,6 +77,21 @@ public class GlobalExceptionHandler {
     public ApiError handleException(final Throwable e) {
         log.error("{} {}", HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Error ...", e.getMessage(), getStackTrace(e));
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ApiError handleOnConstraintValidationException(final ConstraintViolationException e) {
+        log.error("{} {}", HttpStatus.BAD_REQUEST, e.getMessage());
+        return new ApiError(HttpStatus.BAD_REQUEST, "Constraint Validation Exception.", e.getMessage(), getStackTrace(e));
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ApiError handleOnMissingServletRequestParameterException(final MissingServletRequestParameterException e) {
+        log.error("{} {}", HttpStatus.BAD_REQUEST, e.getMessage());
+        return new ApiError(HttpStatus.BAD_REQUEST, "MissingServletRequestParameterException Validation Exception.",
+                e.getMessage(), getStackTrace(e));
     }
 
     private String getStackTrace(Throwable e) {
