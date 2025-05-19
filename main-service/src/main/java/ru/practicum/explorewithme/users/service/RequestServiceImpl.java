@@ -17,6 +17,7 @@ import ru.practicum.explorewithme.users.repository.RequestRepository;
 import ru.practicum.explorewithme.users.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static ru.practicum.explorewithme.exception.NotFoundException.notFoundException;
@@ -83,26 +84,55 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public UserParticipationRequestDto patchRequestStatus(ChangeRequestStatusDto changeRequestStatusDto) {
-        for (long requestId : changeRequestStatusDto.getRequestIds()) {
-            ParticipationRequest participationRequest = requestRepository.findById(requestId).orElseThrow(notFoundException("Запрос {0} на участие не найден", requestId));
-            checkParticipantLimitEqualRequestsOnEvent(participationRequest.getEvent());
-            checkOnNotPublishedEvent(participationRequest.getEvent());
+    public UserParticipationRequestDto patchRequestStatus(ChangeRequestStatusDto changeRequestStatusDto, long userId, long eventId) {
+
+        List<ParticipationRequest> confirmedRequests = new ArrayList<>();
+        List<ParticipationRequest> rejectedRequests = new ArrayList<>();
+
+        List<ParticipationRequest> requests = requestRepository.findAllById(changeRequestStatusDto.getRequestIds());
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(notFoundException(EVENT_NOT_FOUND_EXCEPTION_MESSAGE, eventId));
+
+        long allRequestsOnEventCount = requestRepository.countParticipationRequestByEvent_IdAndStatus(eventId, RequestStatus.CONFIRMED);
+        int participantLimit = event.getParticipantLimit();
+        long canConfirmRequestsNumber = participantLimit == 0 ? requests.size() : participantLimit - allRequestsOnEventCount;
+
+        if (canConfirmRequestsNumber <= 0) {
+            throw new ConflictException(String.format(
+                    "Событие с идентификатором: %d недоступно для добавления новых заявок.", eventId
+            ));
         }
 
-        return null;
+        for (ParticipationRequest participationRequest : requests) {
+            // статус можно изменить только у заявок, находящихся в состоянии ожидания (Ожидается код ошибки 409)
+            if (participationRequest.getStatus() != RequestStatus.PENDING) {
+                throw new ConflictException("Status not pending: request id:  " + participationRequest.getId());
+            }
+        }
 
+        for (ParticipationRequest request : requests) {
+            if (changeRequestStatusDto.getStatus() == RequestStatus.REJECTED || canConfirmRequestsNumber <= 0) {
+                request.setStatus(RequestStatus.REJECTED);
+                rejectedRequests.add(request);
+                continue;
+            }
+
+            request.setStatus(RequestStatus.CONFIRMED);
+            confirmedRequests.add(request);
+            canConfirmRequestsNumber--;
+        }
+
+        requestRepository.saveAll(requests);
+
+        return UserParticipationRequestDto.builder()
+                .confirmedRequests(ParticipationRequestMapper.mapToDTO(confirmedRequests))
+                .rejectedRequests(ParticipationRequestMapper.mapToDTO(rejectedRequests))
+                .build();
     }
 
     private void checkOnNotPublishedEvent(Event event) {
         if (event.getState() != EventState.PUBLISHED) {
             throw new ConflictException("Event is not published");
-        }
-    }
-
-    private void checkOnRequestOnPendingState(Event event) {
-        if (event.getState() != EventState.PENDING) {
-            throw new ConflictException("Event is not pending state");
         }
     }
 
@@ -119,7 +149,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private void checkParticipantLimitEqualRequestsOnEvent(Event event) {
-        if (event.getParticipantLimit() == requestRepository.countParticipationRequestByEvent_Id(event.getId())
+        if (event.getParticipantLimit() == requestRepository.countParticipationRequestByEvent_IdAndStatus(event.getId(), RequestStatus.CONFIRMED)
                 && event.getParticipantLimit() != 0) {
             throw new ConflictException("Participant limit is equal to request limit");
         }

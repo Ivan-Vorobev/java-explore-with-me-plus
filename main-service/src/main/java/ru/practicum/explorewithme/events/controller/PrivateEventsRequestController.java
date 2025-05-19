@@ -26,7 +26,8 @@ public class PrivateEventsRequestController {
     }
 
     @PatchMapping
-    public UserParticipationRequestDto patchRequestStatus(@RequestBody ChangeRequestStatusDto changeRequestStatusDto) {
-        return requestService.patchRequestStatus(changeRequestStatusDto);
+    public UserParticipationRequestDto patchRequestStatus(@RequestBody ChangeRequestStatusDto changeRequestStatusDto,
+                                                          @PathVariable Long userId, @PathVariable Long eventId) {
+        return requestService.patchRequestStatus(changeRequestStatusDto, userId, eventId);
     }
 }

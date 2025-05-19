@@ -7,6 +7,6 @@ import java.util.List;
 
 @Data
 public class ChangeRequestStatusDto {
-    List<Integer> requestIds;
+    List<Long> requestIds;
     RequestStatus status;
 }

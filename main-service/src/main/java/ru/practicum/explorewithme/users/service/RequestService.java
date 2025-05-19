@@ -15,5 +15,6 @@ public interface RequestService {
 
     List<ParticipationRequestDto> findUserRequestsOnEvent(long userId, long eventId);
 
-    UserParticipationRequestDto patchRequestStatus(ChangeRequestStatusDto changeRequestStatusDto);
+    UserParticipationRequestDto patchRequestStatus(ChangeRequestStatusDto changeRequestStatusDto, long userId, long eventId);
+
 }
