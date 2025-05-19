@@ -26,14 +26,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiError handleNotFound(final NotFoundException e) {
-        log.info("{} {}", HttpStatus.NOT_FOUND, e.getMessage());
+        log.error("{} {}", HttpStatus.NOT_FOUND, e.getMessage());
         return new ApiError(HttpStatus.NOT_FOUND, "The requested object was not found.", e.getMessage(), getStackTrace(e));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleValidationException(final MethodArgumentNotValidException e) {
-        log.info("{} {}", HttpStatus.BAD_REQUEST, e.getMessage());
+        log.error("{} {}", HttpStatus.BAD_REQUEST, e.getMessage());
         return new ApiError(HttpStatus.BAD_REQUEST, "Error with the input parameter.", e.getMessage(), getStackTrace(e));
     }
 
@@ -54,21 +54,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleDataAlreadyExistException(final DataAlreadyExistException e) {
-        log.info("{} {}", HttpStatus.CONFLICT, e.getMessage());
+        log.error("{} {}", HttpStatus.CONFLICT, e.getMessage());
         return new ApiError(HttpStatus.CONFLICT, "The data must be unique.", e.getMessage(), getStackTrace(e));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleDataAlreadyExistException(final ConflictException e) {
-        log.info("{} {}", HttpStatus.CONFLICT, e.getMessage());
+        log.error("{} {}", HttpStatus.CONFLICT, e.getMessage());
         return new ApiError(HttpStatus.CONFLICT, "Runtime conflict", e.getMessage(), getStackTrace(e));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleRelatedDataDeleteException(final RelatedDataDeleteException e) {
-        log.info("{} {}", HttpStatus.CONFLICT, e.getMessage());
+        log.error("{} {}", HttpStatus.CONFLICT, e.getMessage());
         return new ApiError(HttpStatus.CONFLICT, "Deleting related data is not allowed.", e.getMessage(), getStackTrace(e));
     }
 
