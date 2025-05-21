@@ -1,4 +1,4 @@
-package ru.practicum.explorewithme.events.controller;
+package ru.practicum.explorewithme.events.dto;
 
 import lombok.Builder;
 import lombok.Data;
