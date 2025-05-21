@@ -3,6 +3,7 @@ package ru.practicum.explorewithme.users.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import ru.practicum.explorewithme.users.model.EventRequestCount;
 import ru.practicum.explorewithme.users.model.ParticipationRequest;
 import ru.practicum.explorewithme.users.model.RequestStatus;
 
@@ -15,8 +16,8 @@ public interface RequestRepository extends JpaRepository<ParticipationRequest, L
 
     long countParticipationRequestByRequesterIdAndEvent_Id(long userId, long eventId);
 
-    @Query("SELECT r.event, count(r.id) as requestsCount FROM ParticipationRequest r WHERE r.status = :status AND r.event.id in :eventIds GROUP BY r.event ORDER BY requestsCount ASC")
-    List<ParticipationRequest> findEventsCountByStatus(@Param("eventIds") List<Long> eventIds, @Param("status") RequestStatus status);
+    @Query("SELECT NEW ru.practicum.explorewithme.users.model.EventRequestCount(r.event.id, count(r.id)) FROM ParticipationRequest r WHERE r.status = :status AND r.event.id in :eventIds GROUP BY r.event ORDER BY count(r.id) ASC")
+    List<EventRequestCount> findEventsCountByStatus(@Param("eventIds") List<Long> eventIds, @Param("status") RequestStatus status);
 
     Optional<ParticipationRequest> findParticipationRequestByIdAndRequester_Id(long requestId, long userId);
 

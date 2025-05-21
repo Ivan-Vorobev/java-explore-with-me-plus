@@ -36,7 +36,4 @@ public class ParticipationRequest {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RequestStatus status;
-
-    @Transient
-    private Integer requestsCount;
 }

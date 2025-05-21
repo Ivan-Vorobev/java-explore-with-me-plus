@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import lombok.extern.jackson.Jacksonized;
 import ru.practicum.explorewithme.config.CustomLocalDateTimeDeserializer;
 import ru.practicum.explorewithme.config.CustomLocalDateTimeSerializer;
 import ru.practicum.explorewithme.constraint.EventStartDateTime;
@@ -14,7 +13,6 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-@Jacksonized
 public class NewEventDto {
     @NotBlank(groups = {RequestMethod.Create.class})
     @Size(min = 3, max = 120, groups = {RequestMethod.Create.class, RequestMethod.Update.class})
@@ -35,11 +33,8 @@ public class NewEventDto {
     @NotNull(groups = {RequestMethod.Create.class})
     private LocationDto location;
     @PositiveOrZero(groups = {RequestMethod.Create.class, RequestMethod.Update.class})
-    @Builder.Default
-    private Integer participantLimit = 0;
-    @Builder.Default
-    private Boolean paid = false;
-    @Builder.Default
-    private Boolean requestModeration = true;
+    private Integer participantLimit;
+    private Boolean paid;
+    private Boolean requestModeration;
     private EventStateAction stateAction;
 }

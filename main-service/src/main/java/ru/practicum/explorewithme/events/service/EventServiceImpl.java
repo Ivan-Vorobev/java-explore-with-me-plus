@@ -1,6 +1,7 @@
 package ru.practicum.explorewithme.events.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +25,7 @@ import ru.practicum.explorewithme.events.repository.EventRepository;
 import ru.practicum.explorewithme.exception.ConflictException;
 import ru.practicum.explorewithme.exception.NotFoundException;
 import ru.practicum.explorewithme.users.dto.UserDto;
-import ru.practicum.explorewithme.users.model.ParticipationRequest;
+import ru.practicum.explorewithme.users.model.EventRequestCount;
 import ru.practicum.explorewithme.users.model.RequestStatus;
 import ru.practicum.explorewithme.users.model.User;
 import ru.practicum.explorewithme.users.repository.RequestRepository;
@@ -58,6 +59,18 @@ public class EventServiceImpl implements EventService {
         event.setInitiator(user);
         event.setCategory(category);
         event.setCreatedOn(LocalDateTime.now());
+
+        if (newEventDto.getPaid() == null) {
+            event.setPaid(false);
+        }
+
+        if (newEventDto.getParticipantLimit() == null) {
+            event.setParticipantLimit(0);
+        }
+
+        if (newEventDto.getRequestModeration() == null) {
+            event.setRequestModeration(true);
+        }
 
         Event savedEvent = eventRepository.save(event);
         EventDto savedEventDto = eventMapper.toDto(savedEvent);
@@ -168,6 +181,10 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventDto> findAllByUserParams(UserEventParams userEventParams) {
+        if (userEventParams.getRangeStart() != null && userEventParams.getRangeEnd() != null && !userEventParams.getRangeEnd().isAfter(userEventParams.getRangeStart())) {
+            throw new ValidationException("rangeEnd must be after rangeStart");
+        }
+
         PageRequest pageRequest = PageRequest.of(
                 userEventParams.getFrom() / userEventParams.getSize(),
                 userEventParams.getSize(),
@@ -226,21 +243,19 @@ public class EventServiceImpl implements EventService {
                 .map(EventDto::getId)
                 .toList();
 
-        Map<Long, Integer> requests = requestRepository
-                .findEventsCountByStatus(eventIds, RequestStatus.CONFIRMED)
+        List<EventRequestCount> eventsCountByStatus = requestRepository.findEventsCountByStatus(eventIds, RequestStatus.CONFIRMED);
+
+        Map<Long, Long> requests = eventsCountByStatus
                 .stream()
                 .collect(Collectors.toMap(
-                        req -> req.getEvent().getId(),
-                        ParticipationRequest::getRequestsCount
+                        EventRequestCount::getEventId,
+                        EventRequestCount::getRequestsCount
                 ));
 
         events.forEach(event -> {
-            Integer requestCount = 0;
-            if (!Objects.isNull(requests)) {
-                requestCount = requests.get(event.getId());
-                requestCount = Objects.isNull(requestCount) ? 0 : requestCount;
-            }
-            event.setConfirmedRequests(requestCount);
+            Long requestCount = requests.get(event.getId());
+            requestCount = Objects.isNull(requestCount) ? 0L : requestCount;
+            event.setConfirmedRequests(Math.toIntExact(requestCount));
         });
     }
 
@@ -319,14 +334,8 @@ public class EventServiceImpl implements EventService {
                     currentEvent.setState(EventState.PUBLISHED);
                     currentEvent.setPublishedOn(LocalDateTime.now());
                 }
-                case SEND_TO_REVIEW -> {
-                    currentEvent.setRequestModeration(false);
-                    currentEvent.setState(EventState.PENDING);
-                }
-                case CANCEL_REVIEW -> {
-                    currentEvent.setRequestModeration(true);
-                    currentEvent.setState(EventState.CANCELED);
-                }
+                case SEND_TO_REVIEW -> currentEvent.setState(EventState.PENDING);
+                case CANCEL_REVIEW -> currentEvent.setState(EventState.CANCELED);
             }
         }
 
