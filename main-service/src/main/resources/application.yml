@@ -15,7 +15,7 @@ spring:
       write-dates-as-timestamps: false
     default-property-inclusion: non_null  # Игнорирует null-поля
   jpa:
-    hibernate.ddl-auto: none
+    hibernate.ddl-auto: update
     properties:
       hibernate:
         format_sql: true
