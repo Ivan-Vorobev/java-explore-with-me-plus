@@ -29,4 +29,8 @@ public class StatsService {
             }
         }
     }
+
+    private checkDateTimeIntervals(LocalDateTime start, LocalDateTime end) {
+
+    }
 }
