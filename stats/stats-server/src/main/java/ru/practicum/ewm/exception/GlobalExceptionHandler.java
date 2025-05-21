@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.ewm.exception.model.ApiError;
+import ru.practicum.ewm.exception.model.StartAfterEndException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -27,6 +28,14 @@ public class GlobalExceptionHandler {
     public ApiError handleOnMissingServletRequestParameterException(final MissingServletRequestParameterException e) {
         log.error("{} {}", HttpStatus.BAD_REQUEST, e.getMessage());
         return new ApiError(HttpStatus.BAD_REQUEST, "MissingServletRequestParameterException Validation Exception.",
+                e.getMessage(), getStackTrace(e));
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ApiError handleOnStartAfterEndException(final StartAfterEndException e) {
+        log.error("{} {}", HttpStatus.BAD_REQUEST, e.getMessage());
+        return new ApiError(HttpStatus.BAD_REQUEST, "StartAfterEndException.",
                 e.getMessage(), getStackTrace(e));
     }
 
