@@ -53,7 +53,7 @@ class StatsControllerTest {
     void testMissingStartParamReturnsBadRequest() throws Exception {
         mockMvc.perform(get("/stats")
                         .param("end", "2024-12-31 23:59:00"))
-                .andExpect(status().is5xxServerError());
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
