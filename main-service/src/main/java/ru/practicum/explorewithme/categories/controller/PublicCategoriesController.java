@@ -33,7 +33,7 @@ public class PublicCategoriesController {
     ResponseEntity<Collection<CategoryDto>> getCategories(
             @RequestParam(defaultValue = DEFAULT_FROM_VALUE) @PositiveOrZero Integer from,
             @RequestParam(defaultValue = DEFAULT_SIZE_VALUE) @Positive Integer size) {
-        Pageable pageable = PageRequest.of(from/size, size, Sort.by("id").ascending());
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").ascending());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(categoryService.getCategories(pageable));
