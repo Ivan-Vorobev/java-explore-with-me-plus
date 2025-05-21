@@ -24,20 +24,20 @@ public class AdminCategoriesController {
     private final CategoryService categoryService;
 
     @PostMapping
-    ResponseEntity<CategoryDto> create(@RequestBody @Valid NewCategoryDto newCategoryDto) {
+    public ResponseEntity<CategoryDto> create(@RequestBody @Valid NewCategoryDto newCategoryDto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(categoryService.createCategory(newCategoryDto));
     }
 
     @DeleteMapping("/{categoryId}")
-    ResponseEntity<Void> delete(@PathVariable Long categoryId) {
+    public ResponseEntity<Void> delete(@PathVariable Long categoryId) {
         categoryService.deleteCategory(categoryId);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{categoryId}")
-    ResponseEntity<CategoryDto> update(@PathVariable Long categoryId,
+    public ResponseEntity<CategoryDto> update(@PathVariable Long categoryId,
                                        @RequestBody @Valid CategoryDto categoryDto) {
         return ResponseEntity
                 .status(HttpStatus.OK)

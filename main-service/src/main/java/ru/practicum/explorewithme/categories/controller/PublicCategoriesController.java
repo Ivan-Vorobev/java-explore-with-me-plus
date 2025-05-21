@@ -30,7 +30,7 @@ public class PublicCategoriesController {
     private final CategoryService categoryService;
 
     @GetMapping
-    ResponseEntity<Collection<CategoryDto>> getCategories(
+    public ResponseEntity<Collection<CategoryDto>> getCategories(
             @RequestParam(defaultValue = DEFAULT_FROM_VALUE) @PositiveOrZero Integer from,
             @RequestParam(defaultValue = DEFAULT_SIZE_VALUE) @Positive Integer size) {
         Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").ascending());
@@ -40,7 +40,7 @@ public class PublicCategoriesController {
     }
 
     @GetMapping("/{categoryId}")
-    ResponseEntity<CategoryDto> getCategory(@PathVariable Long categoryId) {
+    public ResponseEntity<CategoryDto> getCategory(@PathVariable Long categoryId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(categoryService.getCategory(categoryId));
