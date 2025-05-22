@@ -2,8 +2,12 @@ package ru.practicum.explorewithme.events.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import jakarta.validation.constraints.*;
-import lombok.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
+import lombok.Builder;
+import lombok.Data;
 import ru.practicum.explorewithme.config.CustomLocalDateTimeDeserializer;
 import ru.practicum.explorewithme.config.CustomLocalDateTimeSerializer;
 import ru.practicum.explorewithme.constraint.EventStartDateTime;
