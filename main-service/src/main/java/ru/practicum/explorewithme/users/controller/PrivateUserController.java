@@ -24,6 +24,7 @@ import java.util.List;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class PrivateUserController {
+
     private final EventService eventService;
     private final RequestService requestService;
 

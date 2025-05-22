@@ -1,4 +1,4 @@
 package ru.practicum.explorewithme.comments.dto;
 
-public class FooDto {
+public class CommentDto {
 }
