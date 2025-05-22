@@ -3,9 +3,10 @@ package ru.practicum.explorewithme.events.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explorewithme.comments.CommentService;
+import ru.practicum.explorewithme.comments.dto.CommentDto;
 import ru.practicum.explorewithme.events.dto.EventDto;
 import ru.practicum.explorewithme.events.dto.UserEventParams;
 import ru.practicum.explorewithme.events.service.EventService;
@@ -17,9 +18,10 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path = "/events")
 @RequiredArgsConstructor
-@Slf4j
 public class PublicEventsController {
+
     private final EventService eventService;
+    private final CommentService commentService;
 
     @GetMapping
     public List<EventDto> getEvents(
@@ -58,5 +60,15 @@ public class PublicEventsController {
     ) {
         eventService.sendHit(request);
         return eventService.findPublishedEvent(eventId);
+    }
+
+    @GetMapping("/{eventId}/comments")
+    public List<CommentDto> getComments(@PathVariable Long eventId) {
+        return commentService.findComments(eventId);
+    }
+
+    @GetMapping("/{eventId}/comments/{commentId}")
+    public CommentDto getComment(@PathVariable Long eventId, @PathVariable Long commentId) {
+        return commentService.findComment(eventId, commentId);
     }
 }
