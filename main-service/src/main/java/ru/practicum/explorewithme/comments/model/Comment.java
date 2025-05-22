@@ -1,6 +1,7 @@
 package ru.practicum.explorewithme.comments.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 import ru.practicum.explorewithme.events.model.Event;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "comments")
 @Data
+@Builder
 public class Comment {
 
     @Id

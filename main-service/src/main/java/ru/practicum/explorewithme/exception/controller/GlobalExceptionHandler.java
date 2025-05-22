@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import ru.practicum.explorewithme.exception.ConflictException;
 import ru.practicum.explorewithme.exception.DataAlreadyExistException;
+import ru.practicum.explorewithme.exception.ForbiddenException;
 import ru.practicum.explorewithme.exception.NotFoundException;
 import ru.practicum.explorewithme.exception.RelatedDataDeleteException;
 import ru.practicum.explorewithme.exception.model.ApiError;
@@ -92,6 +93,14 @@ public class GlobalExceptionHandler {
     public ApiError handleOnMissingServletRequestParameterException(final MissingServletRequestParameterException e) {
         log.error("{} {}", HttpStatus.BAD_REQUEST, e.getMessage());
         return new ApiError(HttpStatus.BAD_REQUEST, "MissingServletRequestParameterException Validation Exception.",
+                e.getMessage(), getStackTrace(e));
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ApiError handleForbiddenException(final ForbiddenException e) {
+        log.error("{} {}", HttpStatus.FORBIDDEN, e.getMessage());
+        return new ApiError(HttpStatus.FORBIDDEN, "Access denied...",
                 e.getMessage(), getStackTrace(e));
     }
 
