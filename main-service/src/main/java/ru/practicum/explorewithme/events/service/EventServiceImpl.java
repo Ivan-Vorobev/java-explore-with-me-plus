@@ -41,6 +41,7 @@ import static ru.practicum.explorewithme.events.repository.EventRepository.UserE
 @Service
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
+
     private final EventMapper eventMapper;
     private final EventRepository eventRepository;
     private final UserService userService;
