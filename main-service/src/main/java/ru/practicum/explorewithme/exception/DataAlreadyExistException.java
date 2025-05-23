@@ -1,7 +1,6 @@
 package ru.practicum.explorewithme.exception;
 
 import java.text.MessageFormat;
-import java.util.function.Supplier;
 
 public class DataAlreadyExistException extends RuntimeException {
 
