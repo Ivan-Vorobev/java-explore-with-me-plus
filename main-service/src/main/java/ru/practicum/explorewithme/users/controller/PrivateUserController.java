@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.comments.CommentService;
 import ru.practicum.explorewithme.comments.dto.CommentDto;
 import ru.practicum.explorewithme.comments.dto.NewCommentDto;
-import ru.practicum.explorewithme.comments.dto.PrivateCommentParams;
 import ru.practicum.explorewithme.events.dto.EventDto;
 import ru.practicum.explorewithme.events.dto.NewEventDto;
 import ru.practicum.explorewithme.events.dto.RequestMethod;
@@ -105,22 +104,13 @@ public class PrivateUserController {
         return requestService.patchRequestStatus(changeRequestStatusDto, userId, eventId);
     }
 
-    /*
-    POST /users/{userId}/events/{eventId}/comments
-     - оставить комментарий к событию (может лишь тот, у кого есть approved request)
-    */
     @PostMapping("/users/{userId}/events/{eventId}/comments")
     public CommentDto createComment(
             @PathVariable Long userId,
             @PathVariable Long eventId,
             @RequestBody NewCommentDto newCommentDto
     ) {
-        final PrivateCommentParams params = PrivateCommentParams.builder()
-                .userId(userId)
-                .eventId(eventId)
-                .newCommentDto(newCommentDto)
-                .build();
-        return commentService.createComment(params);
+        return commentService.createComment(userId, eventId, newCommentDto);
     }
 
     /*
