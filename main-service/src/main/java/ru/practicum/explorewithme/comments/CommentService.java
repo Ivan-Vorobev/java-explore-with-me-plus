@@ -2,6 +2,7 @@ package ru.practicum.explorewithme.comments;
 
 import ru.practicum.explorewithme.comments.dto.CommentDto;
 import ru.practicum.explorewithme.comments.dto.NewCommentDto;
+import ru.practicum.explorewithme.comments.model.CommentStatus;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ public interface CommentService {
     CommentDto createComment(long userId, long eventId, NewCommentDto newCommentDto);
 
     void deleteComment(long commentId);
+
+    CommentDto patchCommentStatus(long commentId, CommentStatus status);
 
     List<CommentDto> findApprovedCommentsOnUserId(long userId);
 }

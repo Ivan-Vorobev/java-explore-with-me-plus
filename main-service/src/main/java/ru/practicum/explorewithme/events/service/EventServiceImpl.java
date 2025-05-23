@@ -14,11 +14,11 @@ import ru.practicum.dto.HitsStatDTO;
 import ru.practicum.explorewithme.categories.model.Category;
 import ru.practicum.explorewithme.categories.service.CategoryService;
 import ru.practicum.explorewithme.events.dto.AdminEventParams;
-import ru.practicum.explorewithme.events.dto.UserEventParams;
 import ru.practicum.explorewithme.events.dto.EventDto;
 import ru.practicum.explorewithme.events.dto.NewEventDto;
-import ru.practicum.explorewithme.events.enumiration.EventState;
-import ru.practicum.explorewithme.events.enumiration.EventStateAction;
+import ru.practicum.explorewithme.events.dto.UserEventParams;
+import ru.practicum.explorewithme.events.enumeration.EventState;
+import ru.practicum.explorewithme.events.enumeration.EventStateAction;
 import ru.practicum.explorewithme.events.mapper.EventMapper;
 import ru.practicum.explorewithme.events.model.Event;
 import ru.practicum.explorewithme.events.repository.EventRepository;
@@ -330,13 +330,12 @@ public class EventServiceImpl implements EventService {
 
         if (!Objects.isNull(newEventDto.getStateAction())) {
             switch (newEventDto.getStateAction()) {
-                case REJECT_EVENT -> currentEvent.setState(EventState.CANCELED);
+                case REJECT_EVENT, CANCEL_REVIEW -> currentEvent.setState(EventState.CANCELED);
                 case PUBLISH_EVENT -> {
                     currentEvent.setState(EventState.PUBLISHED);
                     currentEvent.setPublishedOn(LocalDateTime.now());
                 }
                 case SEND_TO_REVIEW -> currentEvent.setState(EventState.PENDING);
-                case CANCEL_REVIEW -> currentEvent.setState(EventState.CANCELED);
             }
         }
 

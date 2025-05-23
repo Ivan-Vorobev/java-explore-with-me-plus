@@ -97,10 +97,23 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public CommentDto patchCommentStatus(long commentId, CommentStatus status) {
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(notFoundException(COMMENT_NOT_FOUND_EXCEPTION_MESSAGE, commentId));
+
+        comment.setStatus(status);
+        commentRepository.save(comment);
+
+        return commentMapper.toDto(comment);
+    }
+
+    @Override
     public List<CommentDto> findApprovedCommentsOnUserId(long userId) {
 
         userService.getUser(userId);
         List<Comment> comments = commentRepository.findByAuthorIdAndStatus(userId, CommentStatus.APPROVED);
+
         return commentMapper.toDto(comments);
     }
 }
