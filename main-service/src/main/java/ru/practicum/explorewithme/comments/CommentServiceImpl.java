@@ -91,4 +91,12 @@ public class CommentServiceImpl implements CommentService {
 
         return commentMapper.toDto(newComment);
     }
+
+    @Override
+    public List<CommentDto> findApprovedCommentsOnUserId(long userId) {
+
+        userService.getUser(userId);
+        List<Comment> comments = commentRepository.findByAuthorIdAndStatus(userId, CommentStatus.APPROVED);
+        return commentMapper.toDto(comments);
+    }
 }

@@ -104,7 +104,7 @@ public class PrivateUserController {
         return requestService.patchRequestStatus(changeRequestStatusDto, userId, eventId);
     }
 
-    @PostMapping("/users/{userId}/events/{eventId}/comments")
+    @PostMapping("/{userId}/events/{eventId}/comments")
     public CommentDto createComment(
             @PathVariable Long userId,
             @PathVariable Long eventId,
@@ -113,8 +113,8 @@ public class PrivateUserController {
         return commentService.createComment(userId, eventId, newCommentDto);
     }
 
-    /*
-     GET /users/{userId}/comments
-     - получение комментариев пользователя (только подтвержденные)
-     */
+    @GetMapping("/{userId}/comments")
+    public List<CommentDto> findApprovedCommentsOnUser(@PathVariable Long userId) {
+        return commentService.findApprovedCommentsOnUserId(userId);
+    }
 }

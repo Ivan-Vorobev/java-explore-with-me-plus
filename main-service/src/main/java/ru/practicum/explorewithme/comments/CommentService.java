@@ -12,4 +12,6 @@ public interface CommentService {
     CommentDto findComment(long eventId, long commentId);
 
     CommentDto createComment(long userId, long eventId, NewCommentDto newCommentDto);
+
+    List<CommentDto> findApprovedCommentsOnUserId(long userId);
 }
