@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explorewithme.comments.CommentService;
 import ru.practicum.explorewithme.comments.dto.CommentDto;
 
 @Slf4j
@@ -11,6 +12,8 @@ import ru.practicum.explorewithme.comments.dto.CommentDto;
 @RequestMapping("/admin/comments")
 @RequiredArgsConstructor
 public class AdminCommentsController {
+
+    private final CommentService commentService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -27,7 +30,7 @@ public class AdminCommentsController {
     @DeleteMapping("/{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteComment(@PathVariable Long commentId) {
-
+        commentService.deleteComment(commentId);
     }
 
     @PatchMapping("/{commentId}")

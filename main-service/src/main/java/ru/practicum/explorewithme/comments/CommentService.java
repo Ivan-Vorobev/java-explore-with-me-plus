@@ -13,5 +13,7 @@ public interface CommentService {
 
     CommentDto createComment(long userId, long eventId, NewCommentDto newCommentDto);
 
+    void deleteComment(long commentId);
+
     List<CommentDto> findApprovedCommentsOnUserId(long userId);
 }

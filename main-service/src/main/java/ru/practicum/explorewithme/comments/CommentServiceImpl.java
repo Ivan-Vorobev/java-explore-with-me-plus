@@ -8,7 +8,6 @@ import ru.practicum.explorewithme.comments.mapper.CommentMapper;
 import ru.practicum.explorewithme.comments.model.Comment;
 import ru.practicum.explorewithme.comments.model.CommentStatus;
 import ru.practicum.explorewithme.events.model.Event;
-import ru.practicum.explorewithme.events.repository.EventRepository;
 import ru.practicum.explorewithme.events.service.EventService;
 import ru.practicum.explorewithme.exception.DataAlreadyExistException;
 import ru.practicum.explorewithme.exception.NotFoundException;
@@ -16,7 +15,6 @@ import ru.practicum.explorewithme.users.model.ParticipationRequest;
 import ru.practicum.explorewithme.users.model.RequestStatus;
 import ru.practicum.explorewithme.users.model.User;
 import ru.practicum.explorewithme.users.repository.RequestRepository;
-import ru.practicum.explorewithme.users.service.RequestService;
 import ru.practicum.explorewithme.users.service.UserService;
 
 import java.time.LocalDateTime;
@@ -35,9 +33,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
     private final RequestRepository requestRepository;
-    private final EventRepository eventRepository;
     private final UserService userService;
-    private final RequestService requestService;
     private final EventService eventService;
 
     @Override
@@ -52,7 +48,7 @@ public class CommentServiceImpl implements CommentService {
 
         eventService.findEventById(eventId);
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(notFoundException(COMMENT_NOT_FOUND_EXCEPTION_MESSAGE, eventId));
+                .orElseThrow(notFoundException(COMMENT_NOT_FOUND_EXCEPTION_MESSAGE, commentId));
 
         return commentMapper.toDto(comment);
     }
@@ -90,6 +86,14 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.save(newComment);
 
         return commentMapper.toDto(newComment);
+    }
+
+    @Override
+    public void deleteComment(long commentId) {
+
+        commentRepository.findById(commentId)
+                .orElseThrow(notFoundException(COMMENT_NOT_FOUND_EXCEPTION_MESSAGE, commentId));
+        commentRepository.deleteById(commentId);
     }
 
     @Override
