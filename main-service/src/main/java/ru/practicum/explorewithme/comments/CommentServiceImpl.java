@@ -12,7 +12,6 @@ import ru.practicum.explorewithme.events.service.EventService;
 import ru.practicum.explorewithme.exception.DataAlreadyExistException;
 import ru.practicum.explorewithme.exception.NotFoundException;
 import ru.practicum.explorewithme.users.model.ParticipationRequest;
-import ru.practicum.explorewithme.users.model.RequestStatus;
 import ru.practicum.explorewithme.users.model.User;
 import ru.practicum.explorewithme.users.repository.RequestRepository;
 import ru.practicum.explorewithme.users.service.UserService;
@@ -40,14 +39,14 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentDto> findComments(long eventId) {
 
         eventService.findEventById(eventId);
-        return commentMapper.toDto(commentRepository.findByEventId(eventId));
+        return commentMapper.toDto(commentRepository.findByEventIdAndStatus(eventId, CommentStatus.APPROVED));
     }
 
     @Override
     public CommentDto findComment(long eventId, long commentId) {
 
         eventService.findEventById(eventId);
-        Comment comment = commentRepository.findById(commentId)
+        Comment comment = commentRepository.findByIdAndStatus(commentId, CommentStatus.APPROVED)
                 .orElseThrow(notFoundException(COMMENT_NOT_FOUND_EXCEPTION_MESSAGE, commentId));
 
         return commentMapper.toDto(comment);
@@ -60,7 +59,7 @@ public class CommentServiceImpl implements CommentService {
         Event event = eventService.findEventById(eventId);
 
         List<ParticipationRequest> participationRequests =
-                requestRepository.findParticipationRequestByRequesterIdAndEventIdAndStatus(userId, eventId, RequestStatus.CONFIRMED);
+                requestRepository.findParticipationRequestByRequesterIdAndEventId(userId, eventId);
 
         if (participationRequests.isEmpty()) {
             throw new NotFoundException("Нет запросов пользователя с ID: {0} к событию с ID: {1}", userId, eventId);
@@ -103,6 +102,12 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(notFoundException(COMMENT_NOT_FOUND_EXCEPTION_MESSAGE, commentId));
 
         comment.setStatus(status);
+        if (status == CommentStatus.APPROVED) {
+            comment.setPublishedDate(LocalDateTime.now());
+        } else if (status == CommentStatus.REJECTED) {
+            comment.setUpdatedDate(LocalDateTime.now());
+        }
+
         commentRepository.save(comment);
 
         return commentMapper.toDto(comment);
