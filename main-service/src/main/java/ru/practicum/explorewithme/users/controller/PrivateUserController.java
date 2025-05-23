@@ -105,6 +105,7 @@ public class PrivateUserController {
     }
 
     @PostMapping("/{userId}/events/{eventId}/comments")
+    @ResponseStatus(HttpStatus.CREATED)
     public CommentDto createComment(
             @PathVariable Long userId,
             @PathVariable Long eventId,

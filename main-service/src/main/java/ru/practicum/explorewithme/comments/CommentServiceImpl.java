@@ -12,7 +12,6 @@ import ru.practicum.explorewithme.events.service.EventService;
 import ru.practicum.explorewithme.exception.DataAlreadyExistException;
 import ru.practicum.explorewithme.exception.NotFoundException;
 import ru.practicum.explorewithme.users.model.ParticipationRequest;
-import ru.practicum.explorewithme.users.model.RequestStatus;
 import ru.practicum.explorewithme.users.model.User;
 import ru.practicum.explorewithme.users.repository.RequestRepository;
 import ru.practicum.explorewithme.users.service.UserService;
@@ -60,7 +59,7 @@ public class CommentServiceImpl implements CommentService {
         Event event = eventService.findEventById(eventId);
 
         List<ParticipationRequest> participationRequests =
-                requestRepository.findParticipationRequestByRequesterIdAndEventIdAndStatus(userId, eventId, RequestStatus.CONFIRMED);
+                requestRepository.findParticipationRequestByRequesterIdAndEventId(userId, eventId);
 
         if (participationRequests.isEmpty()) {
             throw new NotFoundException("Нет запросов пользователя с ID: {0} к событию с ID: {1}", userId, eventId);
@@ -99,6 +98,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto patchCommentStatus(long commentId, CommentStatus status) {
 
+        // todo: add updated time
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(notFoundException(COMMENT_NOT_FOUND_EXCEPTION_MESSAGE, commentId));
 
@@ -113,6 +113,9 @@ public class CommentServiceImpl implements CommentService {
 
         userService.getUser(userId);
         List<Comment> comments = commentRepository.findByAuthorIdAndStatus(userId, CommentStatus.APPROVED);
+
+        // todo: add updated time
+        // todo: add published time
 
         return commentMapper.toDto(comments);
     }
