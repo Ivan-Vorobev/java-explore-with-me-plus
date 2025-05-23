@@ -1,9 +1,7 @@
 package ru.practicum.explorewithme.comments.model;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 import ru.practicum.explorewithme.events.model.Event;
 import ru.practicum.explorewithme.users.model.User;
 
@@ -13,6 +11,8 @@ import java.time.LocalDateTime;
 @Table(name = "comments")
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Comment {
 
     @Id

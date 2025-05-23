@@ -8,6 +8,7 @@ import ru.practicum.client.stats.StatsClient;
 
 @Configuration
 public class StatsClientConfig {
+
     @Bean
     public HitClient hitClient() {
         return new HitClient();

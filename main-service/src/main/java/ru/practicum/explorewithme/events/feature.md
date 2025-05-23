@@ -193,7 +193,8 @@ public interface EventMapper {
 - **Поля `confirmedRequests` и `views`**: Игнорируются, так как отсутствуют в `Event`. Их нужно устанавливать в
   сервисе (например, через подсчет запросов или просмотров).
 - Остальные
-  поля (`id`, `title`, `annotation`, `description`, `eventDate`, `createdOn`, `publishedOn`, `participantLimit`, `paid`, `requestModeration`)
+  поля (`id`, `title`, `annotation`, `description`, `eventDate`, `createdOn`, `publishedOn`, `participantLimit`, `paid`,
+  `requestModeration`)
   мапятся автоматически, так как имена совпадают.
 
 #### 3.2. **Маппинг `NewEventDto` -> `Event`**
@@ -268,19 +269,19 @@ public class EventService {
 #### 4.2. **Пример вызова**
 
 ```java
-NewEventDto newEventDto=NewEventDto.builder()
+NewEventDto newEventDto = NewEventDto.builder()
         .title("Концерт")
         .annotation("Рок-концерт")
         .description("Большой рок-концерт в центре города")
         .category(1L)
-        .eventDate(LocalDateTime.of(2025,6,1,19,0))
+        .eventDate(LocalDateTime.of(2025, 6, 1, 19, 0))
         .location(LocationDto.builder().lat(55.7558f).lon(37.6173f).build())
         .participantLimit(100)
         .paid(true)
         .requestModeration(true)
         .build();
 
-        EventDto createdEvent=eventService.createEvent(newEventDto,1L);
+EventDto createdEvent = eventService.createEvent(newEventDto, 1L);
 ```
 
 ---

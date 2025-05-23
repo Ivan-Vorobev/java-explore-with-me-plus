@@ -2,7 +2,7 @@ package ru.practicum.explorewithme.users.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.explorewithme.events.enumiration.EventState;
+import ru.practicum.explorewithme.events.enumeration.EventState;
 import ru.practicum.explorewithme.events.model.Event;
 import ru.practicum.explorewithme.events.repository.EventRepository;
 import ru.practicum.explorewithme.exception.ConflictException;

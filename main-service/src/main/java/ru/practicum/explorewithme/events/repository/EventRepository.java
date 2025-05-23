@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.util.StringUtils;
 import ru.practicum.explorewithme.events.dto.AdminEventParams;
 import ru.practicum.explorewithme.events.dto.UserEventParams;
-import ru.practicum.explorewithme.events.enumiration.EventState;
+import ru.practicum.explorewithme.events.enumeration.EventState;
 import ru.practicum.explorewithme.events.model.Event;
 import ru.practicum.explorewithme.users.model.ParticipationRequest;
 import ru.practicum.explorewithme.users.model.RequestStatus;
@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
+
+    Page<Event> findAllByInitiatorId(@Param("initiator_id") Long initiator, Pageable pageable);
 
     interface AdminEventSpecification {
         static Specification<Event> withAdminEventParams(AdminEventParams params) {
@@ -128,6 +130,4 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
             };
         }
     }
-
-    Page<Event> findAllByInitiatorId(@Param("initiator_id") Long initiator, Pageable pageable);
 }
