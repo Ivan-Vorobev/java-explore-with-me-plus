@@ -6,7 +6,6 @@ import ru.practicum.explorewithme.compilations.dto.CompilationDto;
 import ru.practicum.explorewithme.compilations.model.Compilation;
 import ru.practicum.explorewithme.events.mapper.EventMapper;
 
-
 import java.util.stream.Collectors;
 
 @Component

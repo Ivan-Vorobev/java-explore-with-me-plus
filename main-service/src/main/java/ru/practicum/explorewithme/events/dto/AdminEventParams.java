@@ -2,7 +2,7 @@ package ru.practicum.explorewithme.events.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.explorewithme.events.enumiration.EventState;
+import ru.practicum.explorewithme.events.enumeration.EventState;
 
 import java.time.LocalDateTime;
 import java.util.List;

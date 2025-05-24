@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explorewithme.comments.CommentService;
+import ru.practicum.explorewithme.comments.dto.CommentDto;
+import ru.practicum.explorewithme.comments.dto.NewCommentDto;
 import ru.practicum.explorewithme.events.dto.EventDto;
 import ru.practicum.explorewithme.events.dto.NewEventDto;
 import ru.practicum.explorewithme.events.dto.RequestMethod;
@@ -24,8 +27,10 @@ import java.util.List;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class PrivateUserController {
+
     private final EventService eventService;
     private final RequestService requestService;
+    private final CommentService commentService;
 
     @GetMapping("/{userId}/requests")
     @ResponseStatus(HttpStatus.OK)
@@ -97,5 +102,20 @@ public class PrivateUserController {
     public UserParticipationRequestDto patchRequestStatus(@RequestBody ChangeRequestStatusDto changeRequestStatusDto,
                                                           @PathVariable Long userId, @PathVariable Long eventId) {
         return requestService.patchRequestStatus(changeRequestStatusDto, userId, eventId);
+    }
+
+    @PostMapping("/{userId}/events/{eventId}/comments")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentDto createComment(
+            @PathVariable Long userId,
+            @PathVariable Long eventId,
+            @RequestBody NewCommentDto newCommentDto
+    ) {
+        return commentService.createComment(userId, eventId, newCommentDto);
+    }
+
+    @GetMapping("/{userId}/comments")
+    public List<CommentDto> findApprovedCommentsOnUser(@PathVariable Long userId) {
+        return commentService.findApprovedCommentsOnUserId(userId);
     }
 }

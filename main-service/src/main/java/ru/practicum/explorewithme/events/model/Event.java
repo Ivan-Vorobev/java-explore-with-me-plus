@@ -3,7 +3,7 @@ package ru.practicum.explorewithme.events.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import ru.practicum.explorewithme.categories.model.Category;
-import ru.practicum.explorewithme.events.enumiration.EventState;
+import ru.practicum.explorewithme.events.enumeration.EventState;
 import ru.practicum.explorewithme.users.model.User;
 
 import java.time.LocalDateTime;

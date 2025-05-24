@@ -10,11 +10,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface EventMapper {
-    @Mapping(target = "id", ignore = true)
-    @Mapping(source = "location.lat", target = "locationLat")
-    @Mapping(source = "location.lon", target = "locationLon")
-    @Mapping(source = "category", target = "category.id")
-    Event toModel(NewEventDto newEventDto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(source = "location.lat", target = "locationLat")
