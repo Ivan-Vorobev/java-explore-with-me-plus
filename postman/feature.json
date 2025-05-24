@@ -79,8 +79,6 @@
 							"    pm.expect(response).to.have.property('authorId');\r",
 							"    pm.expect(response).to.have.property('eventId');\r",
 							"    pm.expect(response).to.have.property('createdDate');\r",
-							"    pm.expect(response).to.have.property('updatedDate');\r",
-							"    pm.expect(response).to.have.property('publishedDate');\r",
 							"    pm.expect(response).to.have.property('status');\r",
 							"});\r",
 							"\r",
@@ -236,8 +234,17 @@
 			"request": {
 				"method": "PATCH",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"status\": \"APPROVED\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "{{baseUrl}}/admin/comments/:commid?status=APPROVED",
+					"raw": "{{baseUrl}}/admin/comments/:commid",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -245,12 +252,6 @@
 						"admin",
 						"comments",
 						":commid"
-					],
-					"query": [
-						{
-							"key": "status",
-							"value": "APPROVED"
-						}
 					],
 					"variable": [
 						{
@@ -328,7 +329,7 @@
 							"        const comment1 = await api.addNewComment(event.id, commentator1.id, rnd.getComment(event.id));\r",
 							"        const comment2 = await api.addNewComment(event.id, commentator2.id, rnd.getComment(event.id));\r",
 							"        \r",
-							"        api.patchCommentStatus(comment1.id, \"APPROVED\");\r",
+							"        api.patchCommentStatusToApproved(comment1.id);\r",
 							"\r",
 							"        console.log(`Пользователи оставили комментарии`);\r",
 							"\r",
@@ -454,7 +455,7 @@
 							"        const comment = await api.addNewComment(event.id, commentator1.id, rnd.getComment(event.id));\r",
 							"        console.log(`Пользователь оставили комментарии`);\r",
 							"\r",
-							"        api.patchCommentStatus(comment.id, \"APPROVED\");\r",
+							"        api.patchCommentStatusToApproved(comment.id);\r",
 							"\r",
 							"        pm.collectionVariables.set(\"eid\", event.id);\r",
 							"        pm.collectionVariables.set(\"commid\", comment.id);\r",
@@ -580,7 +581,7 @@
 							"        const comment1 = await api.addNewComment(event.id, commentator.id, rnd.getComment(event.id));\r",
 							"        console.log(`Пользователи оставили комментарии`);\r",
 							"\r",
-							"        api.patchCommentStatus(comment1.id, \"APPROVED\");\r",
+							"        api.patchCommentStatusToApproved(comment1.id);\r",
 							"\r",
 							"        pm.collectionVariables.set(\"eid\", event.id);\r",
 							"        pm.collectionVariables.set(\"uid\", commentator.id);\r",
@@ -728,6 +729,191 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Получение конкретного комментария по идентификатору",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const main = async () => {\r",
+							"    const api = new API(pm);\r",
+							"    const rnd = new RandomUtils();\r",
+							"\r",
+							"    try {\r",
+							"        console.log('Начинаем выполнение функции main');\r",
+							"\r",
+							"        const user = await api.addUser (rnd.getUser ());\r",
+							"        console.log(`Пользователь создан с ID: ${user.id}`);\r",
+							"\r",
+							"        const category = await api.addCategory(rnd.getCategory());\r",
+							"        console.log(`Категория создана с ID: ${category.id}`);\r",
+							"\r",
+							"        let eventBody = rnd.getEvent(category.id);\r",
+							"        eventBody['requestModeration'] = true;\r",
+							"        eventBody['participantLimit'] = 0;\r",
+							"\r",
+							"        let event = await api.addEvent(user.id, eventBody);\r",
+							"        console.log(`Событие создано с ID: ${event.id}`);\r",
+							"\r",
+							"        event = await api.publishEvent(event.id);\r",
+							"        console.log(`Событие опубликовано: ${event.id}`);\r",
+							"\r",
+							"        const commentator1 = await api.addUser(rnd.getUser());\r",
+							"        console.log(`Создан будущий комментатор: ${commentator1.id}`);\r",
+							"      \r",
+							"        await api.publishParticipationRequest(event.id, commentator1.id);\r",
+							"        console.log(`Отправлена заявка на участие в событии`);\r",
+							"\r",
+							"        const comment = await api.addNewComment(event.id, commentator1.id, rnd.getComment(event.id));\r",
+							"        console.log(`Пользователь оставили комментарии`);\r",
+							"\r",
+							"        api.patchCommentStatusToApproved(comment.id);\r",
+							"\r",
+							"        pm.collectionVariables.set(\"eid\", event.id);\r",
+							"        pm.collectionVariables.set(\"commid\", comment.id);\r",
+							"    } catch (err) {\r",
+							"        console.error('Ошибка при подготовке данных:', err);\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"const interval = setInterval(() => { }, 1000);\r",
+							"\r",
+							"setTimeout(async () => {\r",
+							"    try {\r",
+							"        await main();\r",
+							"    } catch (e) {\r",
+							"        console.error(e);\r",
+							"    } finally {\r",
+							"        clearInterval(interval);\r",
+							"    }\r",
+							"}, 100);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Ответ должен содержать код статуса 200 и данные в формате JSON', function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.response.to.have.body;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"pm.test('Ответ должен быть объектом', function () {\r",
+							"    pm.expect(response).to.be.an('object');\r",
+							"});\r",
+							"\r",
+							"pm.test('Комментарий должен содержать нужные поля', function () {\r",
+							"    pm.expect(response).to.have.property('id');\r",
+							"    pm.expect(response).to.have.property('text');\r",
+							"    pm.expect(response).to.have.property('authorId');\r",
+							"    pm.expect(response).to.have.property('eventId');\r",
+							"    pm.expect(response).to.have.property('createdDate');\r",
+							"    pm.expect(response).to.have.property('updatedDate');\r",
+							"    pm.expect(response).to.have.property('publishedDate');\r",
+							"    pm.expect(response).to.have.property('status');\r",
+							"});\r",
+							"\r",
+							"pm.test('Данные должны соответствовать запросу', function () {\r",
+							"    pm.expect(response.id).to.equal(pm.collectionVariables.get('commid'));\r",
+							"    pm.expect(response.eventId).to.equal(pm.collectionVariables.get('eid'));\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/admin/comments/:commid",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"comments",
+						":commid"
+					],
+					"variable": [
+						{
+							"key": "commid",
+							"value": "{{commid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение комментариев пользователей",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Ответ должен содержать код статуса 200 и данные в формате JSON', function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"pm.test('Ответ должен быть массивом', function () {\r",
+							"    pm.expect(response).to.be.an('array');\r",
+							"});\r",
+							"\r",
+							"pm.test('Каждый комментарий должен содержать нужные поля', function () {\r",
+							"    response.forEach(comment => {\r",
+							"    pm.expect(comment).to.have.property('id');\r",
+							"    pm.expect(comment).to.have.property('text');\r",
+							"    pm.expect(comment).to.have.property('authorId');\r",
+							"    pm.expect(comment).to.have.property('eventId');\r",
+							"    pm.expect(comment).to.have.property('createdDate');\r",
+							"    pm.expect(comment).to.have.property('status');\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/admin/comments",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"comments"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -792,8 +978,8 @@
 					"        return this.get('/admin/users?ids=' + userId, null, \"Ошибка при поиске пользователя по id\", verbose);\r",
 					"    }\r",
 					"\r",
-					"    async patchCommentStatus(commentId, status, verbose = null) {\r",
-					"        return this.patch(\"/admin/comments/\" + commentId + \"?status=\" + status);\r",
+					"    async patchCommentStatusToApproved(commentId) {\r",
+					"        return this.patch(\"/admin/comments/\" + commentId, {status: \"APPROVED\"});\r",
 					"    }\r",
 					"\r",
 					"    async post(path, body, errorText = \"Ошибка при выполнении post-запроса: \", verbose = null) {\r",
