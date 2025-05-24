@@ -16,7 +16,11 @@
 
 ***
 
-* `GET /events/{eventId}/comments` - Получение всех комментариев (со статусом APPROVED) к событию.
+```
+GET /events/{eventId}/comments
+```
+
+- Получение всех комментариев (со статусом APPROVED) к событию.
 
 **Response**
 
@@ -39,7 +43,11 @@
 
 ***
 
-* `GET /events/{eventId}/comments/{commentId}` - Получение комментария по определенному идентификатору (со статусом APPROVED) к событию.
+```
+GET /events/{eventId}/comments/{commentId}
+```
+
+- Получение комментария по определенному идентификатору (со статусом APPROVED) к событию.
 
 **Response**
 
@@ -60,8 +68,14 @@
 
 ***
 
-* `POST /users/{userId}/events/{eventId}/comments` - Создание комментария к событию. Оставить комментарий может лишь тот, 
-у кого есть одобренная заявка на участие.
+> ### Private
+
+```
+POST /users/{userId}/events/{eventId}/comments
+```
+
+- Создание комментария к событию. Оставить комментарий может лишь тот,
+  у кого есть одобренная заявка на участие.
 
 **Response**
 
@@ -80,7 +94,11 @@
 
 ***
 
-* `GET /users/{userId}/comments` - Получение комментариев (со статусом APPROVED) конкретного пользователя.
+```
+GET /users/{userId}/comments
+```
+
+- Получение комментариев (со статусом APPROVED) конкретного пользователя.
 
 **Response**
 
@@ -100,5 +118,105 @@
   }
 ]
 ```
+
+***
+
+> ### Admin
+
+```
+GET /admin/comments
+```
+
+Просмотр администатором комментариев.
+
+- по списку id клмментариев
+- по вхождению текста
+- по списку id событий
+- по списку id авторов
+- по статусу опубликован или нет комментарий
+- по дате создания
+- по дате публикации
+- доступна пагинация
+
+**Response**
+
+`Code: 200`
+
+```json
+[
+  {
+    "id": 5,
+    "text": "Quas blanditiis sit ",
+    "eventId": 4,
+    "authorId": 9,
+    "createdDate": "2025-05-24 11:02:20",
+    "updatedDate": "2025-05-24 11:02:20",
+    "publishedDate": "2025-05-24 11:02:20",
+    "status": "APPROVED"
+  }
+]
+```
+
+***
+
+```
+GET /admin/comments/{commentId}
+```
+
+- Просмотр администратором информации по конкретному комментарию
+
+**Response**
+
+`Code: 200`
+
+```json
+{
+  "id": 5,
+  "text": "Quas blanditiis sit ",
+  "eventId": 4,
+  "authorId": 9,
+  "createdDate": "2025-05-24 11:02:20",
+  "updatedDate": "2025-05-24 11:02:20",
+  "publishedDate": "2025-05-24 11:02:20",
+  "status": "APPROVED"
+}
+```
+
+***
+
+```
+PATCH /admin/comments/{commentId}
+```
+
+- Подтверждение администратором или отклонение модерации комментария
+
+**Response**
+
+`Code: 200`
+
+```json
+{
+  "id": 5,
+  "text": "Quas blanditiis sit ",
+  "eventId": 4,
+  "authorId": 9,
+  "createdDate": "2025-05-24 11:02:20",
+  "updatedDate": "2025-05-24 11:02:20",
+  "publishedDate": "2025-05-24 11:02:20",
+  "status": "APPROVED"
+}
+```
+
+***
+
+```
+DELETE /admin/comments/{commentId}
+```
+
+- Удаление администратором комментария
+
+**Response**
+
+`Code: 204`
 
 ***
