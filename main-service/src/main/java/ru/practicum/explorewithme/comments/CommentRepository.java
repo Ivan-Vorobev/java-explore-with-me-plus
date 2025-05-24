@@ -15,6 +15,16 @@ import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long>, JpaSpecificationExecutor<Comment> {
 
+    Optional<Comment> findById(long id);
+
+    Optional<Comment> findByIdAndStatus(long id, CommentStatus status);
+
+    Optional<Comment> findByAuthorIdAndEventId(long userId, long eventId);
+
+    List<Comment> findByAuthorIdAndStatus(long userId, CommentStatus status);
+
+    List<Comment> findByEventIdAndStatus(long eventId, CommentStatus status);
+
     interface AdminCommentSpecification {
         static Specification<Comment> withAdminCommentParams(AdminCommentParams params) {
             return (root, query, criteriaBuilder) -> {
@@ -67,14 +77,4 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, JpaSpec
             };
         }
     }
-
-    Optional<Comment> findById(long id);
-
-    Optional<Comment> findByIdAndStatus(long id, CommentStatus status);
-
-    Optional<Comment> findByAuthorIdAndEventId(long userId, long eventId);
-
-    List<Comment> findByAuthorIdAndStatus(long userId, CommentStatus status);
-
-    List<Comment> findByEventIdAndStatus(long eventId, CommentStatus status);
 }
