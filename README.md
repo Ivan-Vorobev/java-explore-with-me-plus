@@ -8,3 +8,97 @@
 к событию, а также комментарии пользователей, одобренные для публикации администратором. Все комментарии публикуются после 
 проверки администратором. Администратор может как принять, так и отклонить публикацию комментария. Также у администратора
 существует возможность просмотра всех комментариев с использованием различных фильтров.
+
+
+### API спецификация
+
+> ### Public
+
+***
+
+* `GET /events/{eventId}/comments` - Получение всех комментариев (со статусом APPROVED) к событию.
+
+**Response**
+
+`Code: 200`
+
+```json
+[
+    {
+        "id": 1,
+        "text": "Aut consequatur reic",
+        "eventId": 1,
+        "authorId": 2,
+        "createdDate": "2025-05-24 10:57:35",
+        "updatedDate": "2025-05-24 10:57:35",
+        "publishedDate": "2025-05-24 10:57:35",
+        "status": "APPROVED"
+    }
+]
+```
+
+***
+
+* `GET /events/{eventId}/comments/{commentId}` - Получение комментария по определенному идентификатору (со статусом APPROVED) к событию.
+
+**Response**
+
+`Code: 200`
+
+```json
+{
+  "id": 3,
+  "text": "Consequatur beatae i",
+  "eventId": 2,
+  "authorId": 5,
+  "createdDate": "2025-05-24 10:58:38",
+  "updatedDate": "2025-05-24 10:58:38",
+  "publishedDate": "2025-05-24 10:58:38",
+  "status": "APPROVED"
+}
+```
+
+***
+
+* `POST /users/{userId}/events/{eventId}/comments` - Создание комментария к событию. Оставить комментарий может лишь тот, 
+у кого есть одобренная заявка на участие.
+
+**Response**
+
+`Code: 201`
+
+```json
+{
+    "id": 4,
+    "text": "Новый комментарий",
+    "eventId": 3,
+    "authorId": 7,
+    "createdDate": "2025-05-24 11:00:57",
+    "status": "PENDING"
+}
+```
+
+***
+
+* `GET /users/{userId}/comments` - Получение комментариев (со статусом APPROVED) конкретного пользователя.
+
+**Response**
+
+`Code: 200`
+
+```json
+[
+  {
+    "id": 5,
+    "text": "Quas blanditiis sit ",
+    "eventId": 4,
+    "authorId": 9,
+    "createdDate": "2025-05-24 11:02:20",
+    "updatedDate": "2025-05-24 11:02:20",
+    "publishedDate": "2025-05-24 11:02:20",
+    "status": "APPROVED"
+  }
+]
+```
+
+***
