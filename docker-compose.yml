@@ -1,17 +1,18 @@
 services:
-  #  stats-server:
-  #    build: stats
-  #    image: stats-server
-  #    container_name: stats-server
-  #    ports:
-  #      - "9090:9090"
-  #    depends_on:
-  #      - stats-db
-  #    environment:
-  #      SPRING_DATASOURCE_URL: "jdbc:postgresql://stats-db-postgres:5432/ewm"
-  #      SPRING_DATASOURCE_USERNAME: "ewm-stats"
-  #      SPRING_DATASOURCE_PASSWORD: "ewm-stats"
-  #      POSTGRES_INITDB_ARGS: "--auth=scram-sha-256 --username=ewm-stats"
+  stats-server:
+    build: stats
+    image: stats-server
+    container_name: stats-server
+    ports:
+      - "9090:9090"
+    depends_on:
+      - stats-db
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://stats-db-postgres:5432/ewm"
+      SPRING_DATASOURCE_USERNAME: "ewm-stats"
+      SPRING_DATASOURCE_PASSWORD: "ewm-stats"
+      POSTGRES_INITDB_ARGS: "--auth=scram-sha-256 --username=ewm-stats"
+
   stats-db:
     image: postgres:16.1
     container_name: stats-db-postgres
@@ -29,20 +30,20 @@ services:
       interval: 5s
       retries: 10
 
-  #  ewm-service:
-  #    build: main-service
-  #    image: explore-with-me-main-service
-  #    container_name: explore-with-me-main-service
-  #    ports:
-  #      - "8080:8080"
-  #    depends_on:
-  #      - ewm-db
-  #      - stats-server
-  #    environment:
-  #      STATS_CLIENT_SERVER_URL: "http://stats-server:9090"
-  #      SPRING_DATASOURCE_URL: "jdbc:postgresql://ewm-db-postgres:5432/ewm"
-  #      SPRING_DATASOURCE_USERNAME: "ewm-main"
-  #      SPRING_DATASOURCE_PASSWORD: "ewm-main"
+  ewm-service:
+    build: main-service
+    image: explore-with-me-main-service
+    container_name: explore-with-me-main-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ewm-db
+      - stats-server
+    environment:
+      STATS_CLIENT_SERVER_URL: "http://stats-server:9090"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://ewm-db-postgres:5432/ewm"
+      SPRING_DATASOURCE_USERNAME: "ewm-main"
+      SPRING_DATASOURCE_PASSWORD: "ewm-main"
 
   ewm-db:
     image: postgres:16.1
