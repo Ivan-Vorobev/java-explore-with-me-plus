@@ -90,7 +90,7 @@ public class CommentServiceImpl implements CommentService {
                 .author(user)
                 .createdDate(timestamp)
                 .updatedDate(timestamp)
-                .publishedDate(timestamp)
+                .publishedDate(null)
                 .status(CommentStatus.PENDING)
                 .build();
 
