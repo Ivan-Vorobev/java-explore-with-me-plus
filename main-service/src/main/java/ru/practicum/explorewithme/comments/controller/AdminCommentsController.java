@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.comments.CommentService;
 import ru.practicum.explorewithme.comments.dto.AdminCommentParams;
 import ru.practicum.explorewithme.comments.dto.CommentDto;
+import ru.practicum.explorewithme.comments.dto.CommentPatchDto;
 import ru.practicum.explorewithme.comments.model.CommentStatus;
 
 import java.time.LocalDateTime;
@@ -70,7 +71,9 @@ public class AdminCommentsController {
     @PatchMapping("/{commentId}")
     @ResponseStatus(HttpStatus.OK)
     public CommentDto patchCommentStatus(@PathVariable long commentId,
-                                         @RequestParam(defaultValue = "APPROVED") CommentStatus status) {
+                                         @RequestBody CommentPatchDto commentPatchDto) {
+
+        CommentStatus status = commentPatchDto.getStatus();
         return commentService.patchCommentStatus(commentId, status);
     }
 }

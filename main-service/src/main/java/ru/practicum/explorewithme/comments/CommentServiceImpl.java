@@ -89,8 +89,6 @@ public class CommentServiceImpl implements CommentService {
                 .event(event)
                 .author(user)
                 .createdDate(timestamp)
-                .updatedDate(timestamp)
-                .publishedDate(timestamp)
                 .status(CommentStatus.PENDING)
                 .build();
 
@@ -113,6 +111,7 @@ public class CommentServiceImpl implements CommentService {
         comment.setStatus(status);
         if (status == CommentStatus.APPROVED) {
             comment.setPublishedDate(LocalDateTime.now());
+            comment.setUpdatedDate(LocalDateTime.now());
         } else if (status == CommentStatus.REJECTED) {
             comment.setUpdatedDate(LocalDateTime.now());
         }
