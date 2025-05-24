@@ -1,7 +1,12 @@
 package ru.practicum.explorewithme.comments;
 
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.explorewithme.comments.dto.AdminCommentParams;
 import ru.practicum.explorewithme.comments.dto.CommentDto;
 import ru.practicum.explorewithme.comments.dto.NewCommentDto;
 import ru.practicum.explorewithme.comments.mapper.CommentMapper;
@@ -19,7 +24,9 @@ import ru.practicum.explorewithme.users.service.UserService;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.practicum.explorewithme.comments.CommentRepository.AdminCommentSpecification.withAdminCommentParams;
 import static ru.practicum.explorewithme.exception.NotFoundException.notFoundException;
+
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +57,11 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(notFoundException(COMMENT_NOT_FOUND_EXCEPTION_MESSAGE, commentId));
 
         return commentMapper.toDto(comment);
+    }
+
+    @Override
+    public CommentDto findCommentById(long commentId) {
+        return commentMapper.toDto(getCommentById(commentId));
     }
 
     @Override
@@ -89,17 +101,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void deleteComment(long commentId) {
-
-        commentRepository.findById(commentId)
-                .orElseThrow(notFoundException(COMMENT_NOT_FOUND_EXCEPTION_MESSAGE, commentId));
-        commentRepository.deleteById(commentId);
+        Comment comment = getCommentById(commentId);
+        commentRepository.deleteById(comment.getId());
     }
 
     @Override
     public CommentDto patchCommentStatus(long commentId, CommentStatus status) {
 
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(notFoundException(COMMENT_NOT_FOUND_EXCEPTION_MESSAGE, commentId));
+        Comment comment = getCommentById(commentId);
 
         comment.setStatus(status);
         if (status == CommentStatus.APPROVED) {
@@ -120,5 +129,31 @@ public class CommentServiceImpl implements CommentService {
         List<Comment> comments = commentRepository.findByAuthorIdAndStatus(userId, CommentStatus.APPROVED);
 
         return commentMapper.toDto(comments);
+    }
+
+    @Override
+    public List<CommentDto> findAllByAdminParams(AdminCommentParams params) {
+        if (params.getCreatedDateStart() != null && params.getCreatedDateEnd() != null && !params.getCreatedDateEnd().isAfter(params.getCreatedDateStart())) {
+            throw new ValidationException("createdDateEnd must be after createdDateStart");
+        }
+
+        if (params.getPublishedDateStart() != null && params.getPublishedDateEnd() != null && !params.getPublishedDateEnd().isAfter(params.getPublishedDateStart())) {
+            throw new ValidationException("publishedDateEnd must be after publishedDateStart");
+        }
+
+        PageRequest pageRequest = PageRequest.of(
+                params.getFrom() / params.getSize(),
+                params.getSize(),
+                Sort.by("createdDate").descending()
+        );
+
+        Page<Comment> events = commentRepository.findAll(withAdminCommentParams(params), pageRequest);
+
+        return commentMapper.toDto(events.stream().toList());
+    }
+
+    private Comment getCommentById(long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(notFoundException(COMMENT_NOT_FOUND_EXCEPTION_MESSAGE, commentId));
     }
 }
