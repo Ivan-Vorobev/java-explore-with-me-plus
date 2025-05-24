@@ -32,10 +32,6 @@ import static ru.practicum.explorewithme.exception.NotFoundException.notFoundExc
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
-    private static final String COMMENT_NOT_FOUND_EXCEPTION_MESSAGE = "Комментарий с идентификатором {0} не найден!";
-    private static final String COMMENT_ALREADY_EXISTS_EXCEPTION_MESSAGE =
-            "Комментарий пользователя с идентификатором {0} к событию c идентификатором {1} уже существует!";
-
     private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
     private final RequestRepository requestRepository;
@@ -53,8 +49,10 @@ public class CommentServiceImpl implements CommentService {
     public CommentDto findComment(long eventId, long commentId) {
 
         eventService.findEventById(eventId);
-        Comment comment = commentRepository.findByIdAndStatus(commentId, CommentStatus.APPROVED)
-                .orElseThrow(notFoundException(COMMENT_NOT_FOUND_EXCEPTION_MESSAGE, commentId));
+        Comment comment = commentRepository
+                .findByIdAndStatus(commentId, CommentStatus.APPROVED)
+                .orElseThrow(
+                        notFoundException("Комментарий пользователя с идентификатором {0} к событию c идентификатором {1} уже существует!", commentId));
 
         return commentMapper.toDto(comment);
     }
@@ -79,7 +77,8 @@ public class CommentServiceImpl implements CommentService {
 
         commentRepository.findByAuthorIdAndEventId(user.getId(), event.getId())
                 .ifPresent(value -> {
-                    throw new DataAlreadyExistException(COMMENT_ALREADY_EXISTS_EXCEPTION_MESSAGE, user.getId(), event.getId());
+                    throw new DataAlreadyExistException("Комментарий пользователя с идентификатором {0} к событию c идентификатором {1} уже существует!",
+                            user.getId(), event.getId());
                 });
 
         final LocalDateTime timestamp = LocalDateTime.now();
@@ -153,6 +152,6 @@ public class CommentServiceImpl implements CommentService {
 
     private Comment getCommentById(long commentId) {
         return commentRepository.findById(commentId)
-                .orElseThrow(notFoundException(COMMENT_NOT_FOUND_EXCEPTION_MESSAGE, commentId));
+                .orElseThrow(notFoundException("Комментарий с идентификатором {0} не найден!", commentId));
     }
 }
