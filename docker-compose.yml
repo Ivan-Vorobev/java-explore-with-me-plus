@@ -12,6 +12,7 @@ services:
       SPRING_DATASOURCE_USERNAME: "ewm-stats"
       SPRING_DATASOURCE_PASSWORD: "ewm-stats"
       POSTGRES_INITDB_ARGS: "--auth=scram-sha-256 --username=ewm-stats"
+
   stats-db:
     image: postgres:16.1
     container_name: stats-db-postgres

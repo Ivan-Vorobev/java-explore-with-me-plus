@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Configuration
 public class JacksonConfig {
+
     @Bean
     public SimpleModule javaTimeModule() {
         SimpleModule module = new SimpleModule();

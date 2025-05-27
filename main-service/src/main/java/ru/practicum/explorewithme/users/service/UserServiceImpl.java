@@ -23,10 +23,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(NewUserRequest request) {
+
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new DataAlreadyExistException("User with email " + request.getEmail() + " already exists.");
         }
         User user = userMapper.toUser(request);
+
         return userMapper.toUserDto(userRepository.save(user));
     }
 
@@ -45,6 +47,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getUsers(List<Long> ids, int from, int size) {
+
         if (ids != null && !ids.isEmpty()) {
             return userRepository.findAllById(ids).stream()
                     .map(userMapper::toUserDto)

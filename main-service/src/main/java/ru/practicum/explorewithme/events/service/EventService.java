@@ -2,9 +2,9 @@ package ru.practicum.explorewithme.events.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import ru.practicum.explorewithme.events.dto.AdminEventParams;
-import ru.practicum.explorewithme.events.dto.UserEventParams;
 import ru.practicum.explorewithme.events.dto.EventDto;
 import ru.practicum.explorewithme.events.dto.NewEventDto;
+import ru.practicum.explorewithme.events.dto.UserEventParams;
 import ru.practicum.explorewithme.events.model.Event;
 
 import java.util.List;
